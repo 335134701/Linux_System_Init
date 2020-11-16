@@ -24,7 +24,7 @@ function Main()
 {
 	#=======================================================
 	#参数更改
-	repository=git@github.com:335134701/Linux_System_Setting.git
+	repository=git@github.com:335134701/Linux_System_Init.git
 	localDir=$(pwd)
 	localDirName=${localDir##*/}
 	#=======================================================
