@@ -13,7 +13,7 @@ function Check_Library()
 	fi
 	echo
 }
-function RaspberryYUM(){
+function Raspberry_YUM(){
     echo "#阿里云镜像" >> ${filename}
     Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 1
     echo "deb https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib" >> ${filename}
@@ -39,7 +39,7 @@ function RaspberryYUM(){
     echo "deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" >> ${filename}
     Judge_Order "echo \"deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui\" >> ${filename}" 0
 }
-function Ubuntu14()
+function Ubuntu14_YUM()
 {
     echo "#阿里云镜像" >> ${filename}
     Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
@@ -60,7 +60,7 @@ function Ubuntu14()
     echo "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >> ${filename}
     Judge_Order "echo \"deb-src https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse\" >> ${filename}" 0
 }
-function Ubuntu16()
+function Ubuntu16_YUM()
 {
     echo "#阿里云镜像" >> ${filename}
     Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
@@ -93,7 +93,7 @@ function Ubuntu16()
     Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe\" >> ${filename}" 0
 
 }
-function Ubuntu18()
+function Ubuntu18_YUM()
 {
     echo "#阿里云镜像" >> ${filename}
     Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
@@ -123,7 +123,7 @@ function Ubuntu18()
     Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse\" >> ${filename}" 0
 
 }
-function Ubuntu20()
+function Ubuntu20_YUM()
 {
     echo "#阿里云镜像" >> ${filename}
     Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
@@ -153,21 +153,21 @@ function Ubuntu20()
     Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse\" >> ${filename}" 0
 
 }
-function CentOS6()
+function CentOS6_YUM()
 {
     sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo
     Judge_Order "sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo" 0
     sudo yum makecache
     Judge_Order "sudo yum makecache" 0
 }
-function CentOS7()
+function CentOS7_YUM()
 {
     sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
     Judge_Order "wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo" 0
     sudo yum makecache
     Judge_Order "sudo yum makecache" 0
 }
-function CentOS8()
+function CentOS8_YUM()
 {
     sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo
     Judge_Order "sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo" 0
@@ -194,21 +194,21 @@ function Change_YUM()
     Judge_Order "sudo touch ${filename}" 1
     sudo chmod 777 ${filename}
     if [ ${systemName} = "Raspbian" ];then
-        RaspberryYUM
+        Raspberry_YUM
     elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "14" ];then
-        Ubuntu14
+        Ubuntu14_YUM
     elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "16" ];then
-        Ubuntu16
+        Ubuntu16_YUM
     elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "18" ];then
-        Ubuntu18
+        Ubuntu18_YUM
     elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "20" ];then    
-        Ubuntu20 
+        Ubuntu20_YUM
     elif [ ${systemName} = "CentOS" -a ${systemVersion} = "6" ];then    
-        CentOS6 
+        CentOS6_YUM
     elif [ ${systemName} = "CentOS" -a ${systemVersion} = "7" ];then    
-        CentOS7
+        CentOS7_YUM
     elif [ ${systemName} = "CentOS" -a ${systemVersion} = "8" ];then    
-        CentOS8
+        CentOS8_YUM
     fi
     sudo chmod 644 ${filename}
     Log -I "Change_YUM() 函数执行完成!"

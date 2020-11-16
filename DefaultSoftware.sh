@@ -13,7 +13,16 @@ function Check_Library()
 	fi
 	echo
 }
+#树莓派默认软件安装
+function Raspbian_Software(){
 
+	
+}
+#默认软件安装
+function Default_Software(){
+
+
+}
 
 Check_Library
 SystemInformation

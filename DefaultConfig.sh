@@ -75,6 +75,13 @@ function Raspbian_Config(){
 function Ubuntu_Config(){
 	echo
 	echo
+	#设置为no，更改默认dash为bash
+	sudo dpkg-reconfigure dash
+	#GRUB2 开机界面配置文件
+	fileName=/boot/grub/grub.cfg
+	#根据引导程序配置文件判断出电脑系统类型，并判定是否需要修改配置文件
+	#设置不提醒系统错误
+	fileName='/etc/default/apport'
 	Log -I "Ubuntu_Config() 函数执行完成!"
 	echo
 	echo
