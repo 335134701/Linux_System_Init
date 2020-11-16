@@ -59,8 +59,6 @@ function Raspbian_Description()
 	echo
 }
 function Raspbian_Config(){
-	echo
-	echo
 	#第1步:开启vncserver
 	vncserver
 	#第2步:设置界面相关选项
@@ -69,12 +67,8 @@ function Raspbian_Config(){
 	echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m"
 	sudo passwd pi
 	Log -I "Raspbian_Config() 函数执行完成!"
-	echo 
-	echo
 }
 function Ubuntu_Config(){
-	echo
-	echo
 	#设置为no，更改默认dash为bash
 	sudo dpkg-reconfigure dash
 	#GRUB2 开机界面配置文件
@@ -83,15 +77,9 @@ function Ubuntu_Config(){
 	#设置不提醒系统错误
 	fileName='/etc/default/apport'
 	Log -I "Ubuntu_Config() 函数执行完成!"
-	echo
-	echo
 }
 function CentOS_Config(){
-	echo
-	echo
 	Log -I "CentOS_Config() 函数执行完成!"
-	echo
-	echo
 }
 function Default_Config(){
 	case "${systemName}" in
@@ -109,6 +97,7 @@ function Default_Config(){
 			Log -E "未知系统!"
 		;;
 	esac
+	Log -I "Default_Config() 函数执行完成!"
 }
 Check_Library
 SystemInformation

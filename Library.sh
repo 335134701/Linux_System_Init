@@ -298,4 +298,33 @@ function  Determine_SoftwareFold_Exist()
 	echo
 	echo
 }
+#安装默认软件处理函数
+function Default_Install(){
+    if [ ${#} -eq 1 ]; then
+        if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
+            sudo apt-get install ${1} -y
+            Judge_Order "sudo apt-get install ${1} -y" 1
+        elif [ ${systemName} = "CentOS" ]; then
+            sudo yum install ${1} -y
+            Judge_Order "sudo yum install ${1} -y" 1
+        fi
+    else
+        Log -E "函数参数输入有误!"
+    fi  
+}
+#卸载默认软件处理函数
+function Default_AutoRemove(){
+    if [ ${#} -eq 1 ]; then
+        if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
+            sudo apt-get autoremove ${1} -y
+            Judge_Order "sudo apt-get autoremove ${1} -y" 1
+        elif [ ${systemName} = "CentOS" ]; then
+            sudo yum autoremove ${1} -y
+            Judge_Order "sudo yum autoremove ${1} -y" 1
+        fi
+    else
+        Log -E "函数参数输入有误!"
+    fi
+    
+}
 

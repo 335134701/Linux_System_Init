@@ -13,21 +13,7 @@ function Check_Library()
 	fi
 	echo
 }
-#处理函数
-function Remove(){
-    if [ ${#} -eq 1 ]; then
-        if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
-            sudo apt-get autoremove ${1} -y
-            Judge_Order "sudo apt-get autoremove ${1} -y" 1
-        elif [ ${systemName} = "CentOS" ]; then
-            sudo yum autoremove ${1} -y
-            Judge_Order "sudo yum autoremove ${1} -y" 1
-        fi
-    else
-        Log -E "函数参数输入有误!"
-    fi
-    
-}
+
 #以下函数还可以进行优化处理，优化方式是形成函数
 #卸载Ubuntu默认，无用软件
 function Remove_Unusing_Software(){
@@ -35,32 +21,32 @@ function Remove_Unusing_Software(){
         Log -I "暂未找到无用软件!"
     elif [ ${systemName} = "Ubuntu" ];then
         #雷鸟邮件客户端
-        Remove "thunderbird"
+        Default_AutoRemove "thunderbird"
         #自带播放器
-        Remove "totem"
+        Default_AutoRemove "totem"
         #扫描仪
-        Remove "simple-scan"
+        Default_AutoRemove "simple-scan"
         #数独游戏
-        Remove "gnome-sudoku"
+        Default_AutoRemove "gnome-sudoku"
         #对对碰游戏
-        Remove "gnome-mahjongg"
+        Default_AutoRemove "gnome-mahjongg"
         #扫雷游戏
-        Remove "gnome-mines"
+        Default_AutoRemove "gnome-mines"
         #备份
-        Remove "deja-dup"
+        Default_AutoRemove "deja-dup"
         #Amazon商店
-        Remove "unity-webapps-common"
+        Default_AutoRemove "unity-webapps-common"
         #自带的音乐播放器
-        Remove "rhythmbox"
+        Default_AutoRemove "rhythmbox"
         #自带的即时聊天应用
-        Remove "empathy"
+        Default_AutoRemove "empathy"
         if [ ${systemVersion} = "14" ];then
-            Remove "brasero"
+            Default_AutoRemove "brasero"
             #软件中心
-            Remove "software-center"
+            Default_AutoRemove "software-center"
         elif [ ${systemVersion} = "16" -o ${systemVersion} = "18" ];then
             #软件中心
-            Remove "gnome-software"
+            Default_AutoRemove "gnome-software"
         elif [ ${systemVersion} = "20" ];then
             Log -D "还未找到卸载软件中心的办法!"
         fi
