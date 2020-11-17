@@ -39,7 +39,25 @@ function Raspbian_Software(){
 }
 #Ubuntu默认软件安装
 function Ubuntu_Software(){
-	Log -D "调试中。。。。。。。。。。。。。。。"	
+	#第1步:安装vim编辑器，Ubunutu14 由于vim-common库版本冲突，无法安装vim，需要卸载库再进行安装
+	#f附加安装nautilus-open-terminal，Ubunut14默认右键中无法打开终端
+	if [ ${systemVersion} -eq 14 ]; then
+		Default_Install  "nautilus-open-terminal"
+		Default_AutoRemove "vim-common"		
+	fi
+	Default_Install  "vim"
+	#第2步:安装gedit编辑器
+	Default_Install  "gedit"
+	#第3步:安装GCC G++
+	Default_Install  "gcc g++"	
+	#第4步:安装wget下载器
+	Default_Install  "wget"
+	#第5步:安装tcpdump抓包软件
+	Default_Install  "tcpdump"
+	#第6步:安装wireshark抓包软件
+	Default_Install  "wireshark"
+	#第7步:安装cmake编译器
+	Default_Install  "cmake"
 }
 #CentOS默认软件安装
 function CentOS_Software(){
