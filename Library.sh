@@ -20,6 +20,10 @@ ERRORTime="[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  "
 userName=${USER}
 softwareRootDir=${HOME}/Software
 softwareDir=${HOME}/Software
+#系统名称
+systemName=""
+#系统版本号
+systemVersion=0
 
 #欢迎函数
 function Welcome()
@@ -62,19 +66,22 @@ function SystemInformation()
 {
 	echo
 	systemName=$(cat /etc/issue | cut -d " " -f1)
-	if [ ${systemName} = "Raspbian" ];then
-		systemVersion=$(cat /etc/issue | cut -d " " -f3)
-		Log -I "欢迎使用Raspbian系统,系统版本号为 ${systemVersion} !"
-	elif [ ${systemName} = "Ubuntu" ];then
-		systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
-		Log -I "欢迎使用Ubuntu系统,系统版本号为 ${systemVersion} !"
-	elif [ ${systemName} = "CentOS" ];then
-		systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
-		Log -I "欢迎使用CentOS系统,系统版本号为 ${systemVersion} !"
-	else
-		Log -E "系统名称获取失败,脚本将终止运行!"
-		exit 127
-	fi
+	case "${systemName}" in
+		Raspbian)
+			systemVersion=$(cat /etc/issue | cut -d " " -f3)	
+		;;
+		Ubuntu)
+			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+		;;
+		CentOS)
+			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+		;;
+		*)
+			Log -E "系统名称获取失败,脚本将终止运行!"
+			exit 127
+		;;
+	esac
+	Log -I "欢迎使用${systemName}系统,系统版本号为 ${systemVersion} !"
 	echo
 }
 #logger输出函数
