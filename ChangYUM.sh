@@ -14,12 +14,11 @@ function Check_Library()
 	echo
 }
 function Raspberry_YUM(){
-    echo "#阿里云镜像" >> ${filename}
-    Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 1
-    echo "deb https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib" >> ${filename}
-    Judge_Order "echo \"deb https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib\" >> ${filename}" 0
-    echo "deb-src https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib" >> ${filename}
-    Judge_Order "echo \"deb-src https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib\" >> ${filename}" 0
+    cat << EOF >  ${filename}
+#阿里云镜像
+deb https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib
+deb-src https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib
+EOF
     sudo chmod 644 ${filename}
     filenameBak=/etc/apt/sources.list.d/raspi.list.bak
     filename=/etc/apt/sources.list.d/raspi.list 
@@ -32,147 +31,117 @@ function Raspberry_YUM(){
     sudo touch ${filename}
     Judge_Order "sudo touch ${filename}" 0
     sudo chmod 777 ${filename}
-    echo "#阿里云镜像" >> ${filename}
-    Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
-    echo "deb http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" >> ${filename}
-    Judge_Order "echo \"deb http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui\" >> ${filename}" 0
-    echo "deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui\" >> ${filename}" 0
+    cat << EOF >  ${filename}
+#阿里云镜像
+deb http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui
+deb-src http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui
+EOF
 }
-function Ubuntu14_YUM()
-{
-    echo "#阿里云镜像" >> ${filename}
-    Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
-    echo "deb https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse\" >> ${filename}" 0
-}
-function Ubuntu16_YUM()
-{
-    echo "#阿里云镜像" >> ${filename}
-    Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
-    echo "deb http://mirrors.aliyun.com/ubuntu/ xenial main" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ xenial main\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ xenial main" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial main\" >> ${filename}" 0
+function Ubuntu_YUM(){
+    case "${systemVersion}" in
+        14)
+            cat << EOF >  ${filename}
+#阿里云镜像
+deb https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ trusty main restricted universe multiverse
+deb https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ trusty-security main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main\" >> ${filename}" 0
+deb https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ trusty-updates main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ xenial universe" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ xenial universe\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ xenial universe" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial universe\" >> ${filename}" 0
-    echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates universe" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates universe\" >> ${filename}" 0
+deb https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse
+deb-src https://mirrors.aliyun.com/ubuntu/ trusty-backports main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-security main" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ xenial-security main\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main\" >> ${filename}" 0
-    echo "deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe\" >> ${filename}" 0
+## Not recommended
+# deb https://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse
+# deb-src https://mirrors.aliyun.com/ubuntu/ trusty-proposed main restricted universe multiverse
+EOF
+        ;;
+        16)
+            cat << EOF >  ${filename}
+#阿里云镜像
+deb http://mirrors.aliyun.com/ubuntu/ xenial main
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial main
 
-}
-function Ubuntu18_YUM()
-{
-    echo "#阿里云镜像" >> ${filename}
-    Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
-    echo "deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ xenial universe
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial universe
+deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates universe
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ xenial-security main
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main
+deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe
+deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security universe
+EOF
+        ;;
+        18)
+            cat << EOF >  ${filename}
+#阿里云镜像
+deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
 
-}
-function Ubuntu20_YUM()
-{
-    echo "#阿里云镜像" >> ${filename}
-    Judge_Order "echo \"#阿里云镜像\" >> ${filename}" 0
-    echo "deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+EOF
+        ;;
+        20)
+            cat << EOF >  ${filename}
+#阿里云镜像
+deb http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-security main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted universe multiverse
 
-    echo "deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse\" >> ${filename}" 0
-    echo "deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse" >> ${filename}
-    Judge_Order "echo \"deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse\" >> ${filename}" 0
+deb http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-proposed main restricted universe multiverse
 
+deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+deb-src http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+EOF
+        ;;
+    esac
+    
 }
 function CentOS6_YUM()
 {
-    sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo
-    Judge_Order "sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo" 0
-    sudo yum makecache
-    Judge_Order "sudo yum makecache" 0
-}
-function CentOS7_YUM()
-{
-    sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
-    Judge_Order "wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo" 0
-    sudo yum makecache
-    Judge_Order "sudo yum makecache" 0
-}
-function CentOS8_YUM()
-{
-    sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo
-    Judge_Order "sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo" 0
-    sudo yum makecache
-    Judge_Order "sudo yum makecache" 0
+    case "${systemVersion}" in
+        6)
+            sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo
+            Judge_Order "sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-6.repo" 0
+            sudo yum makecache
+            Judge_Order "sudo yum makecache" 0
+        ;;
+        7)
+            sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+            Judge_Order "wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo" 0
+            sudo yum makecache
+            Judge_Order "sudo yum makecache" 0
+        ;;
+        8)
+            sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo
+            Judge_Order "sudo wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-8.repo" 0
+            sudo yum makecache
+            Judge_Order "sudo yum makecache" 0
+        ;;
+    esac
+    
 }
 function Change_YUM()
 {
@@ -193,26 +162,22 @@ function Change_YUM()
     sudo touch ${filename}
     Judge_Order "sudo touch ${filename}" 1
     sudo chmod 777 ${filename}
-    if [ ${systemName} = "Raspbian" ];then
-        Raspberry_YUM
-    elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "14" ];then
-        Ubuntu14_YUM
-    elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "16" ];then
-        Ubuntu16_YUM
-    elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "18" ];then
-        Ubuntu18_YUM
-    elif [ ${systemName} = "Ubuntu" -a ${systemVersion} = "20" ];then    
-        Ubuntu20_YUM
-    elif [ ${systemName} = "CentOS" -a ${systemVersion} = "6" ];then    
-        CentOS6_YUM
-    elif [ ${systemName} = "CentOS" -a ${systemVersion} = "7" ];then    
-        CentOS7_YUM
-    elif [ ${systemName} = "CentOS" -a ${systemVersion} = "8" ];then    
-        CentOS8_YUM
-    fi
+    case "${systemName}" in
+        Raspbian)
+            Raspberry_YUM
+        ;;
+        Ubuntu)
+            Ubuntu_YUM
+        ;;
+        CentOS)
+            CentOS_YUM
+        ;;
+        *)
+            Log -E "未知系统!"
+        ;;
+    esac
     sudo chmod 644 ${filename}
     Log -I "Change_YUM() 函数执行完成!"
-
 
 	#新安装的Ubuntu在使用sudo apt-get update更新源码的时候出现如下错误：
 	#W: GPG 错误：http://mirrors.ustc.edu.cn/ros/ubuntu xenial InRelease: 由于没有公钥，无法验证下列签名： NO_PUBKEY F42ED6FBAB17C654
