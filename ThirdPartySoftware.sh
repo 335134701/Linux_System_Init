@@ -32,6 +32,8 @@ function CentOS_ThirdPart_Software()
 #以下函数还可以进行优化处理，优化方式是形成函数
 #安装第三方应用软件及配置相应环境
 function Install_ThirdPart_Software(){
+	test ! -d $(pwd)/ThirdPartySoftware/${systemName} &&  \
+		Log -E "目录 $(pwd)/ThirdPartySoftware/${systemName} 不存在,程序无法继续执行!" &&  exit 91
 	case "${systemName}" in
 		Raspbian)
 			Raspbian_ThirdPart_Software
