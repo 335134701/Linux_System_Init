@@ -3,5 +3,5 @@
 dir=$(pwd)
 for file in ${dir}/*.sh; do
     echo ${file}
-    chmod 755 ${file}
+    chmod u+x ${file}
 done
