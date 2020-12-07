@@ -78,26 +78,23 @@ function Ubuntu_Config(){
 		local endLine=$(grep -n -E "^### END /etc/grub.d/20_memtest86\+ ###" ${fileName} | cut -d ":" -f1)
 		test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
 		test $((${endLine}-${startLine})) -gt 5 &&  \
-			sed -i -e "$((${startLine}+1)),$((${endLine}-1)) d" ${fileName} && \
+			sudo sed -i -e "$((${startLine}+1)),$((${endLine}-1)) d" ${fileName} && \
 			Log -I "### BEGIN /etc/grub.d/20_memtest86+ ### 文本处理成功!"
 		startLine=$(grep -n -E "^submenu 'Advanced options for Ubuntu'" ${fileName} | cut -d ":" -f1)
 		endLine=$(grep -n -E "^### END /etc/grub.d/10_linux ###" ${fileName} | cut -d ":" -f1)
 		test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
 		test $((${endLine}-${startLine})) -gt 5 &&  \
-			sed -i -e "${startLine},$((${endLine}-1)) d" ${fileName} && \
+			sudo sed -i -e "${startLine},$((${endLine}-1)) d" ${fileName} && \
 			Log -I "### BEGIN /etc/grub.d/10_linux ### 文本处理成功!"
 		startLine=$(grep -n -E "^### BEGIN /etc/grub.d/30_os-prober ###" ${fileName} | cut -d ":" -f1)
 		endLine=$(grep -n -E "^### END /etc/grub.d/30_os-prober ###" ${fileName} | cut -d ":" -f1)
 		test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
 		test $((${endLine}-${startLine})) -gt 5 &&  \
-			#fileName=/etc/default/grub && \
-			fileName=${HOME}/Desktop/grub && \
-			sudo chmod u+x ${fileName}  && \
+			fileName=/etc/default/grub && \
 			#设置进入GRUB选择界面后默认等待时间5S
-			sed -i -e 's/'"^GRUB_TIMEOUT.*/GRUB_TIMEOUT=5"'/g' ${fileName}   && \
+			sudo sed -i -e 's/'"^GRUB_TIMEOUT.*/GRUB_TIMEOUT=5"'/g' ${fileName}   && \
 			#设置默认选择系统选项Windows
-			sed -i -e 's/'"^GRUB_DEFAULT.*/GRUB_DEFAULT=1"'/g' ${fileName} && \
-			sudo chmod u-x /etc/default/grub && sudo update-grub && \
+			sudo sed -i -e 's/'"^GRUB_DEFAULT.*/GRUB_DEFAULT=1"'/g' ${fileName} && \
 			Log -I "### BEGIN /etc/grub.d/30_os-prober ### 文本处理成功!"
 	else
 		Log -E "${fileName} 文件不存在!"
@@ -106,19 +103,16 @@ function Ubuntu_Config(){
 	fileName=/etc/default/apport
 	if [ -f "${fileName}" ];then
 		test -z $(grep -n -E "^enabled=0" ${fileName}) && \
-			sudo chmod u+x ${fileName} && \
-			sed -i 's/'"^enabled.*/enabled=0"'/g' ${fileName} && \
-			sudo chmod u-x ${fileName} && \
+			sudo sed -i 's/'"^enabled.*/enabled=0"'/g' ${fileName} && \
 			Log -I "设置不提示系统错误信息成功!"
 	else  
 		Log -E "${fileName} 文件不存在!"
 	fi	
+	#设置禁止访客登陆
 	fileName=/usr/share/lightdm/lightdm.conf.d/50-guest-wrapper.conf
 	if [ -f "${fileName}" ];then
 		test -z $(grep -n -E "^allow-guest.*" ${fileName}) && \
-			sudo chmod u+x ${fileName} && \
-			sed -i \$a"allow-guest=false"  ${fileName}  && \
-			sudo chmod u-x ${fileName}  && \
+			sudo sed -i \$a"allow-guest=false"  ${fileName}  && \
 			Log -I "设置禁止访客登陆成功!"
 	else
 		Log -E "${fileName} 文件不存在!"
