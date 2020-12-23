@@ -135,12 +135,17 @@ function Judge_Order(){
 #解析配置文件
 function ParseConfigurationFile()
 {
-	filename=$(pwd)/Linux.config
+	declare -A ConfigArray
+	filename=$(pwd)/Linux.conf
 	test ! -f ${filename} && \
-		Log -E "配置文件 ${filename} 不能存在!" && exit 90
+		Log -E "配置文件 ${filename} 不存在!" && exit 90
 	test -z ${systemName} && \
 		Log -E "系统信息获取失败,程序结束!" && exit 127
-	Log -D "程序执行中。。。。。。。。。。。。。。"
+	indexName=(`sed -n '/\['${systemName}'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
+    indexValues=(`sed -n '/\['${systemName}'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
+	for((i=0;i<${#indexName[*]};i++)); do
+		ConfigArray[${indexName[i]}]=${indexValues[i]}
+	done
 }	
 #判断方法是否继续执行
 #${1}:传入用户选择；
