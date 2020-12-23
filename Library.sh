@@ -61,30 +61,6 @@ function Welcome()
 	echo
 	echo
 }
-
-#获取系统相关信息
-function SystemInformation()
-{
-	echo
-	systemName=$(cat /etc/issue | cut -d " " -f1)
-	case "${systemName}" in
-		Raspbian)
-			systemVersion=$(cat /etc/issue | cut -d " " -f3)	
-		;;
-		Ubuntu)
-			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
-		;;
-		CentOS)
-			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
-		;;
-		*)
-			Log -E "系统名称获取失败,脚本将终止运行!"
-			exit 127
-		;;
-	esac
-	Log -I "欢迎使用${systemName}系统,系统版本号为 ${systemVersion} !"
-	echo
-}
 #logger输出函数
 #参数表示：I:Info D:Debug W:Warn E:Error 
 function Log()
@@ -111,6 +87,29 @@ function Log()
         esac
     done
 }
+#获取系统相关信息
+function SystemInformation()
+{
+	echo
+	systemName=$(cat /etc/issue | cut -d " " -f1)
+	case "${systemName}" in
+		Raspbian)
+			systemVersion=$(cat /etc/issue | cut -d " " -f3)	
+		;;
+		Ubuntu)
+			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+		;;
+		CentOS)
+			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+		;;
+		*)
+			Log -E "系统名称获取失败,脚本将终止运行!"
+			exit 127
+		;;
+	esac
+	Log -I "欢迎使用${systemName}系统,系统版本号为 ${systemVersion} !"
+	echo
+}
 #判断命令是否执行成功
 #${1}:执行的命令语句
 function Judge_Order(){
@@ -133,37 +132,16 @@ function Judge_Order(){
 	fi
     echo
 }
-#更新软件
-function Update_All()
+#解析配置文件
+function ParseConfigurationFile()
 {
-	echo
-	echo
-	if [ ${systemName} = "Raspbian" -o ${systemName} = "Ubuntu" ];then
-			sudo apt-get upgrade -y
-			Judge_Order "sudo apt-get upgrade -y" 1
-			sudo apt-get update -y
-			Judge_Order "sudo apt-get update -y" 1
-			sudo apt-get -f install -y
-			Judge_Order "sudo apt-get -f install -y" 1
-			sudo apt-get autoremove -y
-			Judge_Order "sudo apt-get autoremove -y" 1
-	elif [ ${systemName} = "CentOS" ];then
-			sudo yum upgrade -y
-			Judge_Order "sudo yum upgrade -y" 1
-			sudo yum update -y
-			Judge_Order "sudo yum update -y" 1
-			sudo yum -f install -y
-			Judge_Order "sudo yum -f install -y" 1
-			sudo yum autoremove -y
-			Judge_Order "sudo yum autoremove -y" 1
-	else
-			Log -E "未获取到系统信息,无法做适配处理,脚本将终止运行!"
-			exit 127
-	fi
-    Log -I "Update_All() 函数执行完成!"
-	echo
-	echo
-}
+	filename=$(pwd)/Linux.config
+	test ! -f ${filename} && \
+		Log -E "配置文件 ${filename} 不能存在!" && exit 90
+	test -z ${systemName} && \
+		Log -E "系统信息获取失败,程序结束!" && exit 127
+	Log -D "程序执行中。。。。。。。。。。。。。。"
+}	
 #判断方法是否继续执行
 #${1}:传入用户选择；
 #${2}:传入需要执行的方法
@@ -268,7 +246,6 @@ function Software_Install()
 	fi
 	echo
 }
-
 #执行其他脚本文件
 #${1}:脚本文件名称及目录
 function Run_SHFile()
@@ -281,12 +258,36 @@ function Run_SHFile()
 		Log -E "${1} 脚本不存在!"
 	fi
 }
-
+#更新软件
+function Update_All()
+{
+	if [ ${systemName} = "Raspbian" -o ${systemName} = "Ubuntu" ];then
+			sudo apt-get upgrade -y
+			Judge_Order "sudo apt-get upgrade -y" 1
+			sudo apt-get update -y
+			Judge_Order "sudo apt-get update -y" 1
+			sudo apt-get -f install -y
+			Judge_Order "sudo apt-get -f install -y" 1
+			sudo apt-get autoremove -y
+			Judge_Order "sudo apt-get autoremove -y" 1
+	elif [ ${systemName} = "CentOS" ];then
+			sudo yum upgrade -y
+			Judge_Order "sudo yum upgrade -y" 1
+			sudo yum update -y
+			Judge_Order "sudo yum update -y" 1
+			sudo yum -f install -y
+			Judge_Order "sudo yum -f install -y" 1
+			sudo yum autoremove -y
+			Judge_Order "sudo yum autoremove -y" 1
+	else
+			Log -E "未获取到系统信息,无法做适配处理,脚本将终止运行!"
+			exit 127
+	fi
+    Log -I "Update_All() 函数执行完成!"
+}
 #判断对应的目录是存在
 function  Determine_SoftwareFold_Exist()
 {
-	echo
-	echo
 	if [ ${#} -eq 1 ];then
 		if [ -d "${HOME}/Software" ];then
 			Log -W "${HOME}/Software 目录已存在!"
@@ -303,8 +304,6 @@ function  Determine_SoftwareFold_Exist()
 	else
 		Log -E "函数传入参数错误!"
 	fi
-	echo
-	echo
 }
 #安装默认软件处理函数
 function Default_Install(){
@@ -335,4 +334,3 @@ function Default_AutoRemove(){
     fi
     
 }
-

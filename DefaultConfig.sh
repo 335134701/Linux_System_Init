@@ -58,14 +58,44 @@ function Raspbian_Description()
 	echo
 	echo
 }
+
+#设置静态IP
+:<<!
+function Raspbian_Set_Static_IP()
+{
+    filename=/etc/dhcpcd.conf
+	read -t 10 -p "请选择设置无线静态IP或有线静态IP(E:有线;W:无线;默认无线): " isChoose
+	if [ ${isChoose} = "E" -o ${isChoose} = "e" ];then
+		echo -e ${INFOTime}"\033[34m你的输入是:${isChoose},根据你的选择,将设置有线静态IP!\033[0m"
+        Judge_Txt "#interface eth0" "interface eth0"
+	elif [ ${isChoose} = "W" -o ${isChoose} = "w" ];then
+		echo -e ${INFOTime}"\033[34m34m你的输入是:${isChoose},根据你的选择,将设置无线静态IP!\033[0m"
+        Judge_Txt "interface wlan0"
+	else
+		echo -e ${WARNTime}"\033[33m34m你的输入是:${isChoose},输入错误,系统将默认设置有线静态IP!\033[0m"
+        Judge_Txt "#interface eth0" "interface eth0"
+	fi
+    Judge_Txt "static ip_address=192.168.0.150\/24"
+	Judge_Txt "static routers=192.168.0.1"
+	Judge_Txt "static domain_name_servers=114.114.114.114 8.8.8.8"
+}
+!
 function Raspbian_Config(){
 	#第1步:开启vncserver
 	vncserver
 	#第2步:设置界面相关选项
-	sudo raspi-config
+	#sudo raspi-config
 	#第3步:更改Pi用户密码
 	echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m"
 	sudo passwd pi
+	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
+	read -p "请确认是否准备好配置静态IP(Y/N):" isChoose
+	if [ ${isChoose} = "Y"  -o ${isChoose} = "y" ]; then
+		Log -D "输出正常"
+	else
+		Log -W "未获取局域网IP信息,程序将跳过静态IP设置选项!"
+	fi
+	#Raspbian_Set_Static_IP
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
