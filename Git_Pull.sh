@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 #判断命令是否执行成功
 #${1}:执行的命令语句
 function Judge_Order(){

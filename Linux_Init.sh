@@ -10,11 +10,13 @@ function Check_Library()
 	else
         . Library.sh
 		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!"
+		SystemInformation
+		ParseConfigurationFile
 	fi
 	echo
 }
 #修改系统源为国内源
-function Change_YUM(){ 
+function ChangYUM(){ 
     echo
 	echo
 	Run_SHFile "$(pwd)/Chang_YUM.sh"
@@ -22,7 +24,7 @@ function Change_YUM(){
 	echo
 }
 #卸载Ubuntu默认，无用软件
-function Remove_Unusing_Software(){
+function UnUseSoftware(){
 	echo
 	echo
     Run_SHFile "$(pwd)/UnUseSoftware.sh"
@@ -30,7 +32,7 @@ function Remove_Unusing_Software(){
 	echo
 }
 #更改默认配置
-function Default_Configuration(){
+function DefaultConfig(){
 	echo
 	echo
     Run_SHFile "$(pwd)/DefaultConfig.sh"
@@ -38,10 +40,18 @@ function Default_Configuration(){
 	echo
 }
 #安装默认软件
-function Default_Configuration(){
+function DefaultSoftware(){
 	echo
 	echo
-    Run_SHFile "$(pwd)/DefaultSoftware.sh.sh"
+    Run_SHFile "$(pwd)/DefaultSoftware.sh"
+	echo
+	echo
+}
+#安装第三方软件
+function ThirdPartySoftware(){
+	echo
+	echo
+    Run_SHFile "$(pwd)/ThirdPartySoftware.sh"
 	echo
 	echo
 }
@@ -51,19 +61,11 @@ function Main()
 	Check_Library
 	#Step 2: 执行欢迎函数
 	Welcome
-    #如果是树莓派系统，另需要说明一下其他相关操作
-    if [ ${systemName} = "Raspbian" ]; then
-        Description_Init_Desktop
-    fi
-	sleep 1s
-    #Step 3:获取系统信息
-    SystemInformation
-	#Step 4:更换YUM
-	Software_Install "Change_YUM"
-    #Step 5:更换YUM
-    Update_All
-	sleep 2s
-	#Step 6:执行卸载Ubuntu自带软件函数
-	#Software_Install "Remove_Unusing_Software"
+	for((i=0;i<${#ScriptArray[@]};i++)); do
+		test ${ScriptArray[i]} != "Library.sh" -a ${ScriptArray[i]} != "${0#*/}"  && \
+			Software_Install ${ScriptArray[i]%.*}
+			Update_All
+			sleep 1s
+	done
 }
 Main

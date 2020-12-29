@@ -31,7 +31,6 @@ function Welcome()
 {
 	echo
 	echo
-	echo
 	echo -e "\033[34m*****************************************************\033[0m"
 	echo -e "\033[34m**                                                 **\033[0m"
 	echo -e "\033[34m**                                                 **\033[0m"
@@ -57,7 +56,6 @@ function Welcome()
 	echo -e "\033[34m**                                                 **\033[0m"
 	echo -e "\033[34m**                                                 **\033[0m"
 	echo -e "\033[34m*****************************************************\033[0m"
-	echo
 	echo
 	echo
 }
@@ -114,7 +112,6 @@ function SystemInformation()
 #${1}:执行的命令语句
 function Judge_Order(){
 	local status=${?}
-    echo
 	if [ ${#} -eq 2 ];then
 		#判断上一条命令的返回值是否为0，若为0则执行成功，若不为0则执行失败
 		if [ ${status} -eq 0 ];then
@@ -125,7 +122,6 @@ function Judge_Order(){
 				exit 127
 			fi
 		fi
-		
 	else
 		Log -E "函数传入参数错误!"
 		return 80
@@ -141,11 +137,16 @@ function ParseConfigurationFile()
 		Log -E "配置文件 ${filename} 不存在!" && exit 90
 	test -z ${systemName} && \
 		Log -E "系统信息获取失败,程序结束!" && exit 127
-	indexName=(`sed -n '/\['${systemName}'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
-    indexValues=(`sed -n '/\['${systemName}'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
+	#解析脚本名称
+	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'`)
+	indexName=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
+    indexValues=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
 	for((i=0;i<${#indexName[*]};i++)); do
 		ConfigArray[${indexName[i]}]=${indexValues[i]}
 	done
+	test ${#ScriptArray[@]} -eq 0 && \
+		Log -W "${filename} 配置文件未解析出目标脚本！" && exit 127
+	Log -I "${filename} 配置文件解析成功!"
 }	
 #判断方法是否继续执行
 #${1}:传入用户选择；
@@ -241,7 +242,7 @@ function Software_Install()
 				${1}
 			fi
 		else
-			Log -E "函数不存在!"
+			Log -E "${1}() 函数不存在!"
 			return 82
 		fi
 		

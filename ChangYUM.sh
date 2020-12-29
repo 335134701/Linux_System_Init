@@ -10,6 +10,8 @@ function Check_Library()
 	else
         . Library.sh
 		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!"
+		SystemInformation
+		ParseConfigurationFile
 	fi
 	echo
 }
@@ -188,5 +190,4 @@ function Change_YUM()
 	#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654 #此处F42ED6FBAB17C654需要是错误提示的key
 }
 Check_Library
-SystemInformation
 Change_YUM

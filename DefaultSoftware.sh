@@ -10,6 +10,8 @@ function Check_Library()
 	else
         . Library.sh
 		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!"
+		SystemInformation
+		ParseConfigurationFile
 	fi
 	echo
 }
