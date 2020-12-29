@@ -1,5 +1,6 @@
 #! /bin/bash
 
+
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
 {
@@ -9,9 +10,9 @@ function Check_Library()
 		exit 90
 	else
         . Library.sh
-		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!"
-		SystemInformation
-		ParseConfigurationFile
+		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!" && echo
+        SystemInformation
+        ParseConfigurationFile
 	fi
 	echo
 }
@@ -22,8 +23,8 @@ deb https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib
 deb-src https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib
 EOF
     sudo chmod 644 ${filename}
-    filenameBak=/etc/apt/sources.list.d/raspi.list.bak
-    filename=/etc/apt/sources.list.d/raspi.list 
+    filenameBak=${ConfigArray[yumfile]}.d/raspi.list.bak
+    filename=${ConfigArray[yumfile]}.d/raspi.list 
     if [ -f ${filename} -a ! -f ${filenameBak} ];then
         sudo mv ${filename} ${filenameBak}
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0
@@ -147,13 +148,13 @@ function CentOS6_YUM()
 }
 function Change_YUM()
 {
-    if [ ${systemName} = "CentOS" ];then
-        filenameBak=/etc/yum.repos.d/CentOS-Base.repo.bak
-        filename=/etc/yum.repos.d/CentOS-Base.repo
-    elif [ ${systemName} = "Ubuntu" -o ${systemName} = "Raspbian" ];then
-        filenameBak=/etc/apt/sources.list.bak
-	    filename=/etc/apt/sources.list
-    fi
+	#echo ${ConfigArray[ip_address]}
+    #filenameBak=${ConfigArray[yumfile]}.bak
+    #filename=${ConfigArray[yumfile]}
+    #echo ${filename}
+ #   Log -I ${filename}
+ #   Log -I ${filenameBak}
+:<<!
     if [ -f ${filename} -a ! -f ${filenameBak} ];then
         sudo mv ${filename} ${filenameBak}
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0
@@ -180,7 +181,7 @@ function Change_YUM()
     esac
     sudo chmod 644 ${filename}
     Log -I "Change_YUM() 函数执行完成!"
-
+!
 	#新安装的Ubuntu在使用sudo apt-get update更新源码的时候出现如下错误：
 	#W: GPG 错误：http://mirrors.ustc.edu.cn/ros/ubuntu xenial InRelease: 由于没有公钥，无法验证下列签名： NO_PUBKEY F42ED6FBAB17C654
 	#W: 仓库 “http://mirrors.ustc.edu.cn/ros/ubuntu xenial InRelease” 没有数字签名。
@@ -190,4 +191,5 @@ function Change_YUM()
 	#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654 #此处F42ED6FBAB17C654需要是错误提示的key
 }
 Check_Library
+echo ${df[yumfile]}
 Change_YUM

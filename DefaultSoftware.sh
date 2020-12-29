@@ -9,7 +9,7 @@ function Check_Library()
 		exit 90
 	else
         . Library.sh
-		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!"
+		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!" && echo
 		SystemInformation
 		ParseConfigurationFile
 	fi

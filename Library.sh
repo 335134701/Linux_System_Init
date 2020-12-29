@@ -21,11 +21,13 @@ ERRORTime="[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  "
 userName=${USER}
 softwareRootDir=${HOME}/Software
 softwareDir=${HOME}/Software
+configFile=$(pwd)/Linux.conf
 #系统名称
 systemName=""
 #系统版本号
 systemVersion=0
-
+declare -A ConfigArray
+export ConfigArray
 #欢迎函数
 function Welcome()
 {
@@ -88,7 +90,6 @@ function Log()
 #获取系统相关信息
 function SystemInformation()
 {
-	echo
 	systemName=$(cat /etc/issue | cut -d " " -f1)
 	case "${systemName}" in
 		Raspbian)
@@ -131,22 +132,22 @@ function Judge_Order(){
 #解析配置文件
 function ParseConfigurationFile()
 {
-	declare -A ConfigArray
-	filename=$(pwd)/Linux.conf
-	test ! -f ${filename} && \
-		Log -E "配置文件 ${filename} 不存在!" && exit 90
+	#配置文件关联数组
+	test ! -f ${configFile} && \
+		Log -E "配置文件 ${configFile} 不存在!" && exit 90
 	test -z ${systemName} && \
 		Log -E "系统信息获取失败,程序结束!" && exit 127
 	#解析脚本名称
-	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'`)
-	indexName=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
-    indexValues=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${filename}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
-	for((i=0;i<${#indexName[*]};i++)); do
-		ConfigArray[${indexName[i]}]=${indexValues[i]}
+	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'`)
+	indexName=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
+    indexValues=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
+	for((i=0;i<${#indexName[*]};i++)); do	
+		echo ${indexName[i]}"     "${indexValues[i]}	
+		ConfigArray[${indexName[i]}]=${indexValues[i]}			
 	done
-	test ${#ScriptArray[@]} -eq 0 && \
-		Log -W "${filename} 配置文件未解析出目标脚本！" && exit 127
-	Log -I "${filename} 配置文件解析成功!"
+	test ${#ScriptArray[@]} -eq 0 -o ${#ConfigArray[@]} -eq 0  && \
+		Log -W "${configFile} 配置文件未解析出目标脚本！" && exit 127
+	Log -I "${configFile} 配置文件解析成功!"
 }	
 #判断方法是否继续执行
 #${1}:传入用户选择；
