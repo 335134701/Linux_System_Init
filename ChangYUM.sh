@@ -1,5 +1,6 @@
 #! /bin/bash
 
+
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
 {
@@ -147,13 +148,8 @@ function CentOS6_YUM()
 }
 function Change_YUM()
 {
-	#echo ${ConfigArray[ip_address]}
-    #filenameBak=${ConfigArray[yumfile]}.bak
-    #filename=${ConfigArray[yumfile]}
-    #echo ${filename}
- #   Log -I ${filename}
- #   Log -I ${filenameBak}
-:<<!
+    filenameBak=${ConfigArray[yumfile]}.bak
+    filename=${ConfigArray[yumfile]}
     if [ -f ${filename} -a ! -f ${filenameBak} ];then
         sudo mv ${filename} ${filenameBak}
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0
@@ -180,7 +176,6 @@ function Change_YUM()
     esac
     sudo chmod 644 ${filename}
     Log -I "Change_YUM() 函数执行完成!"
-!
 	#新安装的Ubuntu在使用sudo apt-get update更新源码的时候出现如下错误：
 	#W: GPG 错误：http://mirrors.ustc.edu.cn/ros/ubuntu xenial InRelease: 由于没有公钥，无法验证下列签名： NO_PUBKEY F42ED6FBAB17C654
 	#W: 仓库 “http://mirrors.ustc.edu.cn/ros/ubuntu xenial InRelease” 没有数字签名。
@@ -189,6 +184,7 @@ function Change_YUM()
 	#解决方法很简单，下载导入公钥就行，下载导入key的命令如下：
 	#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654 #此处F42ED6FBAB17C654需要是错误提示的key
 }
+
+declare -A ConfigArray
 Check_Library
-echo ${df[*]}
 Change_YUM

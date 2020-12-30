@@ -84,6 +84,6 @@ function Default_Software(){
 	Log -I "Default_Software() 函数执行完成!"
 }
 
+declare -A ConfigArray
 Check_Library
-SystemInformation
 Default_Software

@@ -51,7 +51,7 @@ function Raspbian_Description()
 	echo -e "\033[34m**      8.设置中文环境:Change Locale->选择:zh_CN.GB2312;zh_CN.GB18030;zh_GBK;zh_CN.UTF-8->OK       **\033[0m"
 	echo -e "\033[34m**        注意:空格键可选择多选或取消多选                                                          **\033[0m"
 	echo -e "\033[34m**      9.若SD卡空间大于树莓派显示空间,可扩展空间:Advanced Options->Al Expand Filesystem->确定     **\033[0m"
-	echo -e "\033[34m**      10.修改分辨率:Advanced Options->Resolution->根据需要设置分辨率->确定                     **\033[0m"
+	echo -e "\033[34m**      10.修改分辨率:Advanced Options->Resolution->根据需要设置分辨率->确定                       **\033[0m"
 	echo -e "\033[34m**                                                                                                 **\033[0m"
 	echo -e "\033[34m**                                                                                                 **\033[0m"
 	echo -e "\033[34m**                                                                                                 **\033[0m"
@@ -83,20 +83,26 @@ function Raspbian_Set_Static_IP()
 }
 !
 function Raspbian_Config(){
-	#第1步:开启vncserver
-	vncserver
+	#第1步:开启vncserver,需要注意如下几点:
+	#需要注意的是:此服务在raspi-config 中设置好后默认是启动(若服务未启动，可以重启系统)，无需再手动启动，若默认启动失败，则可以手动启动
+	#需要注意的是:此服务可以启动多次，因此关闭此服务命令为:vncserver -kill :1
+	#-kill :1  	后面的1对应的是手动启动的ID,系统自启动的是没有具体ID的，因此无法使用命令:vncserver -kill :1 停止vncserver服务
+	#系统启动的vncserver服务可以使用命令查看具体进程:ps -ef | grep vncserver;如果不清楚注释可以使用此命令查看手动启动服务和系统启动区别
+	#此步骤执行目录为:/usr/bin/vncserver ;使用命令vncserver或者/usr/bin/vncserver都可以启动服务vncserver
+	#vncserver 
 	#第2步:设置界面相关选项
-	#sudo raspi-config
-	#第3步:更改Pi用户密码
-	echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m"
-	sudo passwd pi
+	sudo raspi-config
+	#第3步:更改Pi用户密码,如果密码为原始密码或者最后修改密码时间距离现在日期大于30天,则需要修改密码
+	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 31 &&
+		echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m" && \
+		sudo passwd pi
 	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
-	read -p "请确认是否准备好配置静态IP(Y/N):" isChoose
-	if [ ${isChoose} = "Y"  -o ${isChoose} = "y" ]; then
-		Log -D "输出正常"
-	else
-		Log -W "未获取局域网IP信息,程序将跳过静态IP设置选项!"
-	fi
+	#read -p "请确认是否准备好配置静态IP(Y/N):" isChoose
+	#if [ ${isChoose} = "Y"  -o ${isChoose} = "y" ]; then
+	#	Log -D "输出正常"
+	#else
+	#	Log -W "未获取局域网IP信息,程序将跳过静态IP设置选项!"
+	#fi
 	#Raspbian_Set_Static_IP
 }
 function Ubuntu_Config(){
@@ -171,6 +177,7 @@ function Default_Config(){
 	esac
 	Log -I "Default_Config() 函数执行完成!"
 }
+
+declare -A ConfigArray
 Check_Library
-SystemInformation
 Default_Config

@@ -52,6 +52,7 @@ function Install_ThirdPart_Software(){
 	esac
 	Log -I "Install_ThirdPart_Software() 方法执行完成!"
 }
+
+declare -A ConfigArray
 Check_Library
-SystemInformation
 Install_ThirdPart_Software

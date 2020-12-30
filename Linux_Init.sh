@@ -69,4 +69,5 @@ function Main()
 			sleep 1s
 	done
 }
+declare -A ConfigArray
 Main

@@ -13,7 +13,7 @@
 #**********************************************************
 
 
-INFOTime=="[\033[32m$(date +"%Y-%m-%d %T") Info\033[0m]  "
+INFOTime="[\033[32m$(date +"%Y-%m-%d %T") Info\033[0m]  "
 WARNTime="[\033[33m$(date +"%Y-%m-%d %T") Warning\033[0m]  "
 DEBUGTime="[\033[34m$(date +"%Y-%m-%d %T") Warning\033[0m]  "
 ERRORTime="[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  "
@@ -25,8 +25,7 @@ configFile=$(pwd)/Linux.conf
 systemName=""
 #系统版本号
 systemVersion=0
-declare -A ConfigArray
-#export ConfigArray
+
 #欢迎函数
 function Welcome()
 {
@@ -140,8 +139,7 @@ function ParseConfigurationFile()
 	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'`)
 	indexName=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
     indexValues=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
-	for((i=0;i<${#indexName[*]};i++)); do	
-		echo ${indexName[i]}"     "${indexValues[i]}	
+	for((i=0;i<${#indexName[*]};i++)); do		
 		ConfigArray[${indexName[i]}]=${indexValues[i]}			
 	done
 	test ${#ScriptArray[@]} -eq 0 -o ${#ConfigArray[@]} -eq 0  && \

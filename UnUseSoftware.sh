@@ -79,6 +79,7 @@ function Remove_Unusing_Software(){
 	esac
 	Log -I "Remove_Unusing_Software() 方法执行完成!"
 }
+
+declare -A ConfigArray
 Check_Library
-SystemInformation
 Remove_Unusing_Software
