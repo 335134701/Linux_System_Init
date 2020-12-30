@@ -1,6 +1,5 @@
 #! /bin/bash
 
-
 #**********************************************************
 # 错误代码说明：
 	# 0:表示正确
@@ -27,7 +26,7 @@ systemName=""
 #系统版本号
 systemVersion=0
 declare -A ConfigArray
-export ConfigArray
+#export ConfigArray
 #欢迎函数
 function Welcome()
 {
