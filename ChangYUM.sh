@@ -22,18 +22,16 @@ function Raspberry_YUM(){
 deb https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib
 deb-src https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contrib
 EOF
-    sudo chmod 644 ${filename}
-    filenameBak=${ConfigArray[yumfile]}.d/raspi.list.bak
-    filename=${ConfigArray[yumfile]}.d/raspi.list 
-    if [ -f ${filename} -a ! -f ${filenameBak} ];then
-        sudo mv ${filename} ${filenameBak}
+    filenameBak=${ConfigArray[yumfilepath]}.d/raspi.list.bak
+    filename=${ConfigArray[yumfilepath]}.d/raspi.list 
+    test -f ${filename} -a ! -f ${filenameBak} && \
+        sudo mv ${filename} ${filenameBak} && \
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0
-    fi
     sudo rm -rf ${filename}
     Judge_Order "sudo rm -rf ${filename}" 0
     sudo touch ${filename}
     Judge_Order "sudo touch ${filename}" 0
-    sudo chmod 777 ${filename}
+    sudo chmod 757 ${filename}
     cat << EOF >  ${filename}
 #阿里云镜像
 deb http://mirror.tuna.tsinghua.edu.cn/raspberrypi/ buster main ui
@@ -148,18 +146,16 @@ function CentOS6_YUM()
 }
 function Change_YUM()
 {
-    filenameBak=${ConfigArray[yumfile]}.bak
-    filename=${ConfigArray[yumfile]}
-    if [ -f ${filename} -a ! -f ${filenameBak} ];then
-        sudo mv ${filename} ${filenameBak}
+    filenameBak=${ConfigArray[yumfilepath]}.bak
+    filename=${ConfigArray[yumfilepath]}
+    test -f ${filename} -a ! -f ${filenameBak} && \
+        sudo mv ${filename} ${filenameBak} && \
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0
-    elif [ -f ${filename} -a -f ${filenameBak} ];then
-        sudo rm -rf ${filename}
-        Judge_Order "sudo rm -rf ${filename}" 0
-    fi
+    sudo rm -rf ${filename}
+    Judge_Order "sudo rm -rf ${filename}" 0
     sudo touch ${filename}
     Judge_Order "sudo touch ${filename}" 1
-    sudo chmod 777 ${filename}
+    sudo chmod 757 ${filename}
     case "${systemName}" in
         Raspbian)
             Raspberry_YUM
@@ -174,7 +170,6 @@ function Change_YUM()
             Log -E "未知系统!"
         ;;
     esac
-    sudo chmod 644 ${filename}
     Log -I "Change_YUM() 函数执行完成!"
 	#新安装的Ubuntu在使用sudo apt-get update更新源码的时候出现如下错误：
 	#W: GPG 错误：http://mirrors.ustc.edu.cn/ros/ubuntu xenial InRelease: 由于没有公钥，无法验证下列签名： NO_PUBKEY F42ED6FBAB17C654

@@ -98,12 +98,9 @@ function Raspbian_Config(){
 		sudo passwd pi
 	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
 	read -p "请确认是否准备好配置静态IP(Y/N):" isChoose
-	if [ ${isChoose} = "Y"  -o ${isChoose} = "y" ]; then
+	test ${isChoose} = "Y" -o ${isChoose} = "y" && \
 		#Raspbian_Set_Static_IP
 		Log -D "输出正常"
-	else
-		Log -W "程序将跳过静态IP设置!"
-	fi
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
