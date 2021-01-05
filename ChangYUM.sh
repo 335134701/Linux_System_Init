@@ -24,6 +24,8 @@ deb-src https://mirrors.aliyun.com/raspbian/raspbian/ buster main non-free contr
 EOF
     filenameBak=${ConfigArray[yumfilepath]}.d/raspi.list.bak
     filename=${ConfigArray[yumfilepath]}.d/raspi.list 
+#    test ! -f ${filename} && \ 
+#        Log -E "${filename} 文件不存在!" &&  exit 90
     test -f ${filename} -a ! -f ${filenameBak} && \
         sudo mv ${filename} ${filenameBak} && \
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0
@@ -148,6 +150,8 @@ function Change_YUM()
 {
     filenameBak=${ConfigArray[yumfilepath]}.bak
     filename=${ConfigArray[yumfilepath]}
+#    test ! -f ${filename} && \ 
+#        Log -E "${filename} 文件不存在!" &&  exit 90
     test -f ${filename} -a ! -f ${filenameBak} && \
         sudo mv ${filename} ${filenameBak} && \
         Judge_Order "sudo mv ${filename} ${filenameBak}" 0

@@ -111,19 +111,14 @@ function SystemInformation()
 #${1}:执行的命令语句
 function Judge_Order(){
 	local status=${?}
-	if [ ${#} -eq 2 ];then
-		#判断上一条命令的返回值是否为0，若为0则执行成功，若不为0则执行失败
-		if [ ${status} -eq 0 ];then
-            Log -I "\"${1}\" 执行成功!"
-		else 
-            Log -E "\"${1}\" 执行失败!"
-			if [ "${2}" -eq 0 ];then
-				exit 127
-			fi
-		fi
-	else
-		Log -E "函数传入参数错误!"
-		return 80
+	test  ${#} -ne 2 && \
+		Log -E "函数传入参数错误!" && return 80
+	#判断上一条命令的返回值是否为0，若为0则执行成功，若不为0则执行失败
+	if [ ${status} -eq 0 ];then
+		Log -I "\"${1}\" 执行成功!"
+	else 
+		Log -E "\"${1}\" 执行失败!"
+		test ${2} -eq 0 && 	exit 127
 	fi
     echo
 }
@@ -153,23 +148,20 @@ function Judge_MethodIsExecute()
 {
 	echo
 	local mtehodStatus=126	
-	if [ ${#} -eq 2 ];then
-		if [[ ${1} = 'Y' || ${1} = 'y' ]];then
-			mtehodStatus=0
-            Log -I "你选择的是 \"${1}\" 方法 \"${2}()\" 将开始执行!"
-		elif [[ ${1} = 'N' || ${1} = 'n' ]];then
-			mtehodStatus=1
-			Log -I "你选择的是 \"${1}\" 方法 \"${2}()\" 将不执行!"
-		elif [ -z ${1} ];then
-			mtehodStatus=125
-			Log -W "你在5秒内未确认是否执行方法,方法 \"${2}()\" 将默认执行!"
-		else
-			mtehodStatus=124
-			Log -W "你输入未知确认参数,方法 \"${2}()\" 将默认执行!"
-		fi
+	test ${#} -eq 2 && \
+		Log -E "函数传入参数错误!" && return 80
+	if [[ ${1} = 'Y' || ${1} = 'y' ]];then
+		mtehodStatus=0
+		Log -I "你选择的是 \"${1}\" 方法 \"${2}()\" 将开始执行!"
+	elif [[ ${1} = 'N' || ${1} = 'n' ]];then
+		mtehodStatus=1
+		Log -I "你选择的是 \"${1}\" 方法 \"${2}()\" 将不执行!"
+	elif [ -z ${1} ];then
+		mtehodStatus=125
+		Log -W "你在5秒内未确认是否执行方法,方法 \"${2}()\" 将默认执行!"
 	else
-		Log -E "函数传入参数错误!"
-		return 80
+		mtehodStatus=124
+		Log -W "你输入未知确认参数,方法 \"${2}()\" 将默认执行!"
 	fi
 	echo
 	return ${mtehodStatus}
@@ -181,41 +173,36 @@ function Judge_Txt()
 {
 	echo
 	local result=''
-	if [ ${#} -ge 1 ] && [ ${#} -le 3 ];then
-		if [ $(cat ${filename} 2>&1 | wc -l) -eq 0 ] || [ ! -f ${filename} ] ;then
-			echo ${1} > ${filename}
-		else
-			if [ ! -f ${filename} ];then
-		        Log -E "${filename} 文件不存在!"	
-		        exit 90
-	        fi
-			result=`sudo grep -E -n ^"${1}" ${filename} | cut -d ":" -f 1` 
-			if [ -z "${result}" ];then
-				result=`sudo grep -E -n "${1}" ${filename} | cut -d ":" -f 1` 
-			fi
-			if [ -z "${result}" ] && [ ${#} -eq 1 ];then
-				sudo sed -i \$a"${1}"  ${filename}
-				Judge_Order "sudo sed -i \$a\"${1}\"  ${filename}" 0
-			elif [ -n "${result}" ] && [[ ${3} -eq 1 ]];then
-				resultt=`sudo grep -E -n ^"${2}" ${filename}`
-				if [ -z "${resultt}" ];then 
-					sudo sed -i "${result}i${2}"  ${filename}
-					Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0
-				fi
-			elif [ -n "${result}" ] && [[ ${3} -eq 2 ]];then
-				resultt=`sudo grep -E -n ^"${2}" ${filename}`
-				if [ -z "${resultt}" ];then 
-					sudo sed -i "${result}a${2}"  ${filename}
-					Judge_Order "sudo sed -i \"${result}a${2}\" ${filename}" 0
-				fi
-			elif [ -n "${result}" ] && [ ${#} -eq 2 ];then
-				sudo sed -i 's/'"${1}/${2}"'/g'  ${filename}
-				Judge_Order "sudo sed -i 's/'\"${1}/${2}\"'/g'  ${filename}" 0
-			fi
-		fi
+	test  ${#} -ge 1 -a ${#} -le 3 &&
+		Log -E "函数传入参数错误!" && return 80
+	#文件不存在或为空
+	if [ $(cat ${filename} 2>&1 | wc -l) -eq 0 ] || [ ! -f ${filename} ] ;then
+		echo ${1} > ${filename}
 	else
-		Log -E "函数传入参数错误!"
-		return 80
+		test ! -f ${filename} && Log -E "${filename} 文件不存在!" && exit 90
+		result=`sudo grep -E -n ^"${1}" ${filename} | cut -d ":" -f 1` 
+		if [ -z "${result}" ];then
+			result=`sudo grep -E -n "${1}" ${filename} | cut -d ":" -f 1` 
+		fi
+		if [ -z "${result}" ] && [ ${#} -eq 1 ];then
+			sudo sed -i \$a"${1}"  ${filename}
+			Judge_Order "sudo sed -i \$a\"${1}\"  ${filename}" 0
+		elif [ -n "${result}" ] && [[ ${3} -eq 1 ]];then
+			resultt=`sudo grep -E -n ^"${2}" ${filename}`
+			if [ -z "${resultt}" ];then 
+				sudo sed -i "${result}i${2}"  ${filename}
+				Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0
+			fi
+		elif [ -n "${result}" ] && [[ ${3} -eq 2 ]];then
+			resultt=`sudo grep -E -n ^"${2}" ${filename}`
+			if [ -z "${resultt}" ];then 
+				sudo sed -i "${result}a${2}"  ${filename}
+				Judge_Order "sudo sed -i \"${result}a${2}\" ${filename}" 0
+			fi
+		elif [ -n "${result}" ] && [ ${#} -eq 2 ];then
+			sudo sed -i 's/'"${1}/${2}"'/g'  ${filename}
+			Judge_Order "sudo sed -i 's/'\"${1}/${2}\"'/g'  ${filename}" 0
+		fi
 	fi
 	echo 
 }
@@ -227,26 +214,22 @@ function Software_Install()
 	echo
 	local isChoose='Y'
 	local isChooseMode=126
-	if [ ${#} -eq 1 ];then
-		if [ "$(type -t ${1})" = "function" ] ; then
-    			read -t 5 -n 1 -p "请确认是否执行 ${1}() 方法(Y/N):" isChoose
-			echo
-			#Determine whether to execute method
-			Judge_MethodIsExecute "${isChoose}" ${1}
-			#Get Judge_MethodIsExecute() function return value
-			isChooseMode=${?}
-			#Determine whether to execute  method
-			if [ ${isChooseMode} -ne 1 ] && [ ${isChooseMode} -ne 126 ];then
-				${1}
-			fi
-		else
-			Log -E "${1}() 函数不存在!"
-			return 82
+	test ${#} -eq 1 && \
+	Log -E "函数传入参数错误!" && return 80
+	if [ "$(type -t ${1})" = "function" ] ; then
+			read -t 5 -n 1 -p "请确认是否执行 ${1}() 方法(Y/N):" isChoose
+		echo
+		#Determine whether to execute method
+		Judge_MethodIsExecute "${isChoose}" ${1}
+		#Get Judge_MethodIsExecute() function return value
+		isChooseMode=${?}
+		#Determine whether to execute  method
+		if [ ${isChooseMode} -ne 1 ] && [ ${isChooseMode} -ne 126 ];then
+			${1}
 		fi
-		
 	else
-		Log -E "函数传入参数错误!"
-		return 80	
+		Log -E "${1}() 函数不存在!"
+		return 82
 	fi
 	echo
 }
@@ -292,49 +275,43 @@ function Update_All()
 #判断对应的目录是存在
 function  Determine_SoftwareFold_Exist()
 {
-	if [ ${#} -eq 1 ];then
-		if [ -d "${HOME}/Software" ];then
-			Log -W "${HOME}/Software 目录已存在!"
-		else
-			mkdir ${HOME}/Software
-			Log -I "${HOME}/Software 目录创建成功!"
-		fi
-		if [ -d "${HOME}/Software/${1}" ];then
-			Log -W "${HOME}/Software/${1} 目录已存在!"
-		else
-			mkdir ${HOME}/Software/${1}
-			Log -I "${HOME}/Software/${1} 目录创建成功!"	
-		fi
+	test ${#} -eq 1 && \
+	Log -E "函数传入参数错误!" && return 80
+	if [ -d "${HOME}/Software" ];then
+		Log -W "${HOME}/Software 目录已存在!"
 	else
-		Log -E "函数传入参数错误!"
+		mkdir ${HOME}/Software
+		Log -I "${HOME}/Software 目录创建成功!"
+	fi
+	if [ -d "${HOME}/Software/${1}" ];then
+		Log -W "${HOME}/Software/${1} 目录已存在!"
+	else
+		mkdir ${HOME}/Software/${1}
+		Log -I "${HOME}/Software/${1} 目录创建成功!"	
 	fi
 }
 #安装默认软件处理函数
 function Default_Install(){
-    if [ ${#} -eq 1 ]; then
-        if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
-            sudo apt-get install ${1} -y
-            Judge_Order "sudo apt-get install ${1} -y" 1
-        elif [ ${systemName} = "CentOS" ]; then
-            sudo yum install ${1} -y
-            Judge_Order "sudo yum install ${1} -y" 1
-        fi
-    else
-        Log -E "函数参数输入有误!"
-    fi  
+	test ${#} -eq 1 && \
+		Log -E "函数传入参数错误!" && return 80
+	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
+		sudo apt-get install ${1} -y
+		Judge_Order "sudo apt-get install ${1} -y" 1
+	elif [ ${systemName} = "CentOS" ]; then
+		sudo yum install ${1} -y
+		Judge_Order "sudo yum install ${1} -y" 1
+	fi
 }
 #卸载默认软件处理函数
 function Default_AutoRemove(){
-    if [ ${#} -eq 1 ]; then
-        if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
-            sudo apt-get autoremove ${1} -y
-            Judge_Order "sudo apt-get autoremove ${1} -y" 1
-        elif [ ${systemName} = "CentOS" ]; then
-            sudo yum autoremove ${1} -y
-            Judge_Order "sudo yum autoremove ${1} -y" 1
-        fi
-    else
-        Log -E "函数参数输入有误!"
-    fi
+	test ${#} -eq 1 && \
+		Log -E "函数传入参数错误!" && return 80
+	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
+		sudo apt-get autoremove ${1} -y
+		Judge_Order "sudo apt-get autoremove ${1} -y" 1
+	elif [ ${systemName} = "CentOS" ]; then
+		sudo yum autoremove ${1} -y
+		Judge_Order "sudo yum autoremove ${1} -y" 1
+	fi
     
 }
