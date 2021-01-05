@@ -215,7 +215,7 @@ function Software_Install()
 	local isChoose='Y'
 	local isChooseMode=126
 	test ${#} -eq 1 && \
-	Log -E "函数传入参数错误!" && return 80
+		Log -E "函数传入参数错误!" && return 80
 	if [ "$(type -t ${1})" = "function" ] ; then
 			read -t 5 -n 1 -p "请确认是否执行 ${1}() 方法(Y/N):" isChoose
 		echo
