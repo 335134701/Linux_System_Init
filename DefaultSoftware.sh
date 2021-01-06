@@ -37,7 +37,9 @@ function Raspbian_Software(){
 	#第9步:安装wireshark抓包软件
 	Default_Install  "wireshark"
 	#第10步:安装cmake编译器
-	Default_Install  "cmake"	
+	Default_Install  "cmake"
+	#第11步:安装git工具
+	Default_Install  "git"	
 }
 #Ubuntu默认软件安装
 function Ubuntu_Software(){
@@ -60,6 +62,8 @@ function Ubuntu_Software(){
 	Default_Install  "wireshark"
 	#第7步:安装cmake编译器
 	Default_Install  "cmake"
+	#第8步:安装git工具
+	Default_Install  "git"
 }
 #CentOS默认软件安装
 function CentOS_Software(){
