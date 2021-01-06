@@ -65,18 +65,12 @@ function Raspbian_Description()
 function Set_Static_IP()
 {
     filename=${ConfigArray[staticIPpath]}
-    test ! -f ${filename} && \ 
+    test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
-	if [ ${ConfigArray[staticIPmode]} = "lan"];then
-		Log -I "根据配置文件配置,默认将设置有线静态IP地址,IP:${ConfigArray[ip_address]}"
-        Judge_Txt "interface wlan0"
-	else
-		Log -I "根据配置文件配置,默认将设置无线静态IP地址,IP:${ConfigArray[ip_address]}"
-        Judge_Txt "#interface eth0" "interface eth0"
-	fi
-    Judge_Txt "static ip_address=192.168.0.150\/24"
-	Judge_Txt "static routers=192.168.0.1"
-	Judge_Txt "static domain_name_servers=114.114.114.114 8.8.8.8"
+   	Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
+	Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
+	Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
+	Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"
 }
 function Raspbian_Config(){
 	#第1步:开启vncserver,需要注意如下几点:

@@ -174,7 +174,6 @@ function Judge_MethodIsExecute()
 #当result值为不空时，${3}=2表示在${1}下一行插入${2}
 function Judge_Txt()
 {
-	echo
 	local result=''
 	test  ${#} -lt 1 -o ${#} -gt 3 &&
 		Log -E "函数传入参数错误!" && return 80
@@ -187,18 +186,19 @@ function Judge_Txt()
 	test -z "${result}" -a ${#} -eq 2 && \
 		sudo sed -i \$a"${2}"  ${filename}  && \
 		Judge_Order "sudo sed -i \$a\"${2}\"  ${filename}" 0 && return 0
-	test -n "${result}" -a ${3} -eq 1 && \
+	test -n "${result}" -a ${#} -eq 2 && \
+		sudo sed -i 's/'"${1}/${2}"'/g' ${filename} && \
+		Judge_Order "sudo sed -i 's/'\"${1}/${2}\"'/g' ${filename}" 0 && return 0
+	if [ -n "${result}" ] && [ ${#} -eq 3 ] && [ ${3} -eq 1 ]; then
 		test -z `sudo grep -E -n ^"${2}" ${filename}` && \
 			sudo sed -i "${result}i${2}"  ${filename} && \
 			Judge_Order "sudo sed -i \"${result}i${2}\"  ${filename}" 0	 && return 0
-	test -n "${result}" -a ${3} -eq 2 && \
+	fi
+	if [ -n "${result}" ] && [ ${#} -eq 3 ] && [ ${3} -eq 2 ]; then
 		test -z `sudo grep -E -n ^"${2}" ${filename}` && \
 			sudo sed -i "${result}a${2}"  ${filename} && \
-			Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0	 && return 0	
-	test -n "${result}" -a ${#} -eq 2 && \
-		sudo sed -i 's/'"${1}/${2}"'/g'  ${filename} && \
-		Judge_Order "sudo sed -i 's/'\"${1}/${2}\"'/g'  ${filename}" 0 && return 0
-	echo
+			Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0	 && return 0
+	fi	
 }
 
 #处理重复性软件流程
