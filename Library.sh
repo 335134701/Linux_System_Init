@@ -148,7 +148,7 @@ function Judge_MethodIsExecute()
 {
 	echo
 	local mtehodStatus=126	
-	test ${#} -eq 2 && \
+	test ${#} -ne 2 && \
 		Log -E "函数传入参数错误!" && return 80
 	if [[ ${1} = 'Y' || ${1} = 'y' ]];then
 		mtehodStatus=0
@@ -167,44 +167,40 @@ function Judge_MethodIsExecute()
 	return ${mtehodStatus}
 }
 #配置文件修改
+#${1} 匹配内容
+#${2} 插入内容
+#${3} 说明
 #当result值为不空时，${3}=1表示在${1}上一行插入${2}
 #当result值为不空时，${3}=2表示在${1}下一行插入${2}
 function Judge_Txt()
 {
 	echo
 	local result=''
-	test  ${#} -ge 1 -a ${#} -le 3 &&
+	test  ${#} -lt 1 -o ${#} -gt 3 &&
 		Log -E "函数传入参数错误!" && return 80
 	#文件不存在或为空
-	if [ $(cat ${filename} 2>&1 | wc -l) -eq 0 ] || [ ! -f ${filename} ] ;then
-		echo ${1} > ${filename}
-	else
-		test ! -f ${filename} && Log -E "${filename} 文件不存在!" && exit 90
-		result=`sudo grep -E -n ^"${1}" ${filename} | cut -d ":" -f 1` 
-		if [ -z "${result}" ];then
-			result=`sudo grep -E -n "${1}" ${filename} | cut -d ":" -f 1` 
-		fi
-		if [ -z "${result}" ] && [ ${#} -eq 1 ];then
-			sudo sed -i \$a"${1}"  ${filename}
-			Judge_Order "sudo sed -i \$a\"${1}\"  ${filename}" 0
-		elif [ -n "${result}" ] && [[ ${3} -eq 1 ]];then
-			resultt=`sudo grep -E -n ^"${2}" ${filename}`
-			if [ -z "${resultt}" ];then 
-				sudo sed -i "${result}i${2}"  ${filename}
-				Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0
-			fi
-		elif [ -n "${result}" ] && [[ ${3} -eq 2 ]];then
-			resultt=`sudo grep -E -n ^"${2}" ${filename}`
-			if [ -z "${resultt}" ];then 
-				sudo sed -i "${result}a${2}"  ${filename}
-				Judge_Order "sudo sed -i \"${result}a${2}\" ${filename}" 0
-			fi
-		elif [ -n "${result}" ] && [ ${#} -eq 2 ];then
-			sudo sed -i 's/'"${1}/${2}"'/g'  ${filename}
-			Judge_Order "sudo sed -i 's/'\"${1}/${2}\"'/g'  ${filename}" 0
-		fi
-	fi
-	echo 
+	test $(cat ${filename} 2>&1 | wc -l) -eq 0 -o ! -f ${filename} && \
+		echo ${2} > ${filename} && return 0
+	test ! -f ${filename} && Log -E "${filename} 文件不存在!" && exit 90
+	#查找以${1}开头的内容
+	result=(`sudo grep -E -n "${1}" ${filename} | cut -d ":" -f1`)
+	test -z "${result}" -a ${#} -eq 2 && \
+		sudo sed -i \$a"${2}"  ${filename}  && \
+		Judge_Order "sudo sed -i \$a\"${2}\"  ${filename}" 0 && return 0
+	test -n "${result}" -a ${3} -eq 1 && \
+		resultt=(`sudo grep -E -n ^"${2}" ${filename}`) 
+		test -z "${resultt}"  && \
+			sudo sed -i "${result}i${2}"  ${filename} && \
+			Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0	 && return 0
+	test -n "${result}" -a ${3} -eq 2 && \
+		resultt=(`sudo grep -E -n ^"${2}" ${filename}`) 
+		test -z "${resultt}"  && \
+			sudo sed -i "${result}i${2}"  ${filename} && \
+			Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0	 && return 0	
+	test -n "${result}" -a ${#} -eq 2 && \
+		sudo sed -i 's/'"${1}/${2}"'/g'  ${filename} && \
+		Judge_Order "sudo sed -i 's/'\"${1}/${2}\"'/g'  ${filename}" 0 && return 0
+	echo
 }
 
 #处理重复性软件流程
@@ -214,7 +210,7 @@ function Software_Install()
 	echo
 	local isChoose='Y'
 	local isChooseMode=126
-	test ${#} -eq 1 && \
+	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
 	if [ "$(type -t ${1})" = "function" ] ; then
 			read -t 5 -n 1 -p "请确认是否执行 ${1}() 方法(Y/N):" isChoose
@@ -275,7 +271,7 @@ function Update_All()
 #判断对应的目录是存在
 function  Determine_SoftwareFold_Exist()
 {
-	test ${#} -eq 1 && \
+	test ${#} -ne 1 && \
 	Log -E "函数传入参数错误!" && return 80
 	if [ -d "${HOME}/Software" ];then
 		Log -W "${HOME}/Software 目录已存在!"
@@ -292,7 +288,7 @@ function  Determine_SoftwareFold_Exist()
 }
 #安装默认软件处理函数
 function Default_Install(){
-	test ${#} -eq 1 && \
+	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
 	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
 		sudo apt-get install ${1} -y
@@ -304,7 +300,7 @@ function Default_Install(){
 }
 #卸载默认软件处理函数
 function Default_AutoRemove(){
-	test ${#} -eq 1 && \
+	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
 	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
 		sudo apt-get autoremove ${1} -y
@@ -315,3 +311,6 @@ function Default_AutoRemove(){
 	fi
     
 }
+#filename=/home/pi/dhcpcd.conf
+
+#Judge_Txt "^interface wlan0" "#11111111111" 2
