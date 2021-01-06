@@ -188,14 +188,12 @@ function Judge_Txt()
 		sudo sed -i \$a"${2}"  ${filename}  && \
 		Judge_Order "sudo sed -i \$a\"${2}\"  ${filename}" 0 && return 0
 	test -n "${result}" -a ${3} -eq 1 && \
-		resultt=(`sudo grep -E -n ^"${2}" ${filename}`) 
-		test -z "${resultt}"  && \
+		test -z `sudo grep -E -n ^"${2}" ${filename}` && \
 			sudo sed -i "${result}i${2}"  ${filename} && \
-			Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0	 && return 0
+			Judge_Order "sudo sed -i \"${result}i${2}\"  ${filename}" 0	 && return 0
 	test -n "${result}" -a ${3} -eq 2 && \
-		resultt=(`sudo grep -E -n ^"${2}" ${filename}`) 
-		test -z "${resultt}"  && \
-			sudo sed -i "${result}i${2}"  ${filename} && \
+		test -z `sudo grep -E -n ^"${2}" ${filename}` && \
+			sudo sed -i "${result}a${2}"  ${filename} && \
 			Judge_Order "sudo sed -i \"${result}a${2}\"  ${filename}" 0	 && return 0	
 	test -n "${result}" -a ${#} -eq 2 && \
 		sudo sed -i 's/'"${1}/${2}"'/g'  ${filename} && \
@@ -311,6 +309,3 @@ function Default_AutoRemove(){
 	fi
     
 }
-#filename=/home/pi/dhcpcd.conf
-
-#Judge_Txt "^interface wlan0" "#11111111111" 2
