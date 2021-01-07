@@ -15,6 +15,13 @@
 	# 10.修改分辨率:Advanced Options->Resolution->根据需要设置分辨率->确定
 #**********************************************************
 
+declare -A ConfigArray
+#系统名称
+systemName=""
+#系统版本号
+systemVersion=0
+
+
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
 {
@@ -132,9 +139,9 @@ function Ubuntu_Config(){
 		filename=${ConfigArray[grubpath]} && \
     	test -f ${filename} && \
 			#设置进入GRUB选择界面后默认等待时间5S
-			sudo sed -i -e 's/'"^GRUB_TIMEOUT.*/GRUB_TIMEOUT=5"'/g' ${filename}   && \
+			Judge_Txt "^GRUB_TIMEOUT.*" "GRUB_TIMEOUT=5" && \
 			#设置默认选择系统选项Windows
-			sudo sed -i -e 's/'"^GRUB_DEFAULT.*/GRUB_DEFAULT=1"'/g' ${filename} && \
+			Judge_Txt "^GRUB_DEFAULT.*" "GRUB_DEFAULT=1" && \
 			Log -I "### BEGIN /etc/grub.d/30_os-prober ### 文本处理成功!"
 	test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
@@ -142,16 +149,14 @@ function Ubuntu_Config(){
 	filename=${ConfigArray[apportpath]}
     test ! -f ${filename} && \
 		Log -E "${filename} 文件不存在!" &&  exit 90
-	test -z $(grep -n -E "^enabled=0" ${filename}) && \
-		sudo sed -i 's/'"^enabled.*/enabled=0"'/g' ${filename} && \
-		Log -I "设置不提示系统错误信息成功!"	
+	Judge_Txt "^enabled.*" "enabled=0"
+	Log -I "设置不提示系统错误信息成功!"	
 	#设置禁止访客登陆
 	filename=${ConfigArray[guestpath]}
     test ! -f ${filename} && \
 		Log -E "${filename} 文件不存在!" &&  exit 90
-	test -z $(grep -n -E "^allow-guest.*" ${filename}) && \
-		sudo sed -i \$a"allow-guest=false"  ${filename}  && \
-		Log -I "设置禁止访客登陆成功!"
+	Judge_Txt "^allow-guest.*" "allow-guest=false"
+	Log -I "设置禁止访客登陆成功!"
 	#设置静态IP
 	Set_Static_IP
 }
@@ -159,6 +164,8 @@ function CentOS_Config(){
 	Log -D "CentOS_Config() 函数调试中。。。。。。。。"
 }
 function Default_Config(){
+    test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
+        echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127	
 	case "${systemName}" in
 		Raspbian)
 			Raspbian_Description
@@ -177,6 +184,5 @@ function Default_Config(){
 	Log -I "Default_Config() 函数执行完成!"
 }
 
-declare -A ConfigArray
 Check_Library
 Default_Config

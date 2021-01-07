@@ -1,5 +1,11 @@
 #! /bin/bash
 
+declare -A ConfigArray
+#系统名称
+systemName=""
+#系统版本号
+systemVersion=0
+
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
 {
@@ -34,6 +40,8 @@ function CentOS_ThirdPart_Software()
 #以下函数还可以进行优化处理，优化方式是形成函数
 #安装第三方应用软件及配置相应环境
 function Install_ThirdPart_Software(){
+    test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
+        echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127
 	test ! -d $(pwd)/ThirdPartySoftware/${systemName} &&  \
 		Log -E "目录 $(pwd)/ThirdPartySoftware/${systemName} 不存在,程序无法继续执行!" &&  exit 91
 	case "${systemName}" in
@@ -53,6 +61,5 @@ function Install_ThirdPart_Software(){
 	Log -I "Install_ThirdPart_Software() 方法执行完成!"
 }
 
-declare -A ConfigArray
 Check_Library
 Install_ThirdPart_Software

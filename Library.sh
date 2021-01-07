@@ -21,10 +21,6 @@ userName=${USER}
 softwareRootDir=${HOME}/Software
 softwareDir=${HOME}/Software
 configFile=$(pwd)/Linux.conf
-#系统名称
-systemName=""
-#系统版本号
-systemVersion=0
 
 #欢迎函数
 function Welcome()
@@ -138,7 +134,7 @@ function ParseConfigurationFile()
 		ConfigArray[${indexName[i]}]=${indexValues[i]}			
 	done
 	test ${#ScriptArray[@]} -eq 0 -o ${#ConfigArray[@]} -eq 0  && \
-		Log -W "${configFile} 配置文件未解析出目标脚本！" && exit 127
+		Log -W "${configFile} 配置文件解析失败！" && exit 127
 	Log -I "${configFile} 配置文件解析成功!"
 }	
 #判断方法是否继续执行
@@ -147,24 +143,18 @@ function ParseConfigurationFile()
 function Judge_MethodIsExecute()
 {
 	echo
-	local mtehodStatus=126	
+	local mtehodStatus=126
 	test ${#} -ne 2 && \
-		Log -E "函数传入参数错误!" && return 80
-	if [[ ${1} = 'Y' || ${1} = 'y' ]];then
-		mtehodStatus=0
-		Log -I "你选择的是 \"${1}\" 方法 \"${2}()\" 将开始执行!"
-	elif [[ ${1} = 'N' || ${1} = 'n' ]];then
-		mtehodStatus=1
-		Log -I "你选择的是 \"${1}\" 方法 \"${2}()\" 将不执行!"
-	elif [ -z ${1} ];then
-		mtehodStatus=125
-		Log -W "你在5秒内未确认是否执行方法,方法 \"${2}()\" 将默认执行!"
-	else
-		mtehodStatus=124
-		Log -W "你输入未知确认参数,方法 \"${2}()\" 将默认执行!"
-	fi
+		Log -E "函数传入参数错误!" && return 126
+	test -z ${1} && \
+		Log -W "你在5秒内未确认是否执行方法,\"${2}\" 将默认执行!" && return 125
+	test  ${1} = 'Y' -o ${1} = 'y' && \
+		Log -I "你选择的是 \"${1}\" \"${2}\" 将开始执行!" && return 0
+	test  ${1} = 'N' -o ${1} = 'n' && \
+		Log -W "你选择的是 \"${1}\" \"${2}\" 将不执行!" && return 1
+	test -n ${1} && \
+		Log -W "你输入未知确认参数,\"${2}\" 将默认执行!" && return 124
 	echo
-	return ${mtehodStatus}
 }
 #配置文件修改
 #${1} 匹配内容
@@ -210,34 +200,20 @@ function Software_Install()
 	local isChooseMode=126
 	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
-	if [ "$(type -t ${1})" = "function" ] ; then
-			read -t 5 -n 1 -p "请确认是否执行 ${1}() 方法(Y/N):" isChoose
-		echo
-		#Determine whether to execute method
-		Judge_MethodIsExecute "${isChoose}" ${1}
-		#Get Judge_MethodIsExecute() function return value
-		isChooseMode=${?}
-		#Determine whether to execute  method
-		if [ ${isChooseMode} -ne 1 ] && [ ${isChooseMode} -ne 126 ];then
-			${1}
-		fi
-	else
-		Log -E "${1}() 函数不存在!"
-		return 82
-	fi
+	test ! -f ${1} &&
+		Log -E "${1} 不存在!" && return 90
+#	test "$(type -t ${1})" != "function" && \
+#		Log -E "${1}() 函数不存在!" && return 82
+	read -t 5 -n 1 -p "请确认是否执行 ${1} (Y/N):" isChoose
 	echo
-}
-#执行其他脚本文件
-#${1}:脚本文件名称及目录
-function Run_SHFile()
-{
-	if [ -f ${1} ];then
-		sudo chmod 744 ${1}
-		${1}
-		Judge_Order "${1}" 1
-	else
-		Log -E "${1} 脚本不存在!"
-	fi
+	#Determine whether to execute method
+	Judge_MethodIsExecute "${isChoose}" ${1}
+	#Get Judge_MethodIsExecute() function return value
+	isChooseMode=${?}
+	#Determine whether to execute  method
+	test ${isChooseMode} -ne 1 -a ${isChooseMode} -ne 126  && \
+		sudo chmod 744 ${1} && ${1} && echo &&Judge_Order "${1}" 1
+	echo
 }
 #更新软件
 function Update_All()
@@ -307,5 +283,4 @@ function Default_AutoRemove(){
 		sudo yum autoremove ${1} -y
 		Judge_Order "sudo yum autoremove ${1} -y" 1
 	fi
-    
 }

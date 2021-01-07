@@ -1,5 +1,10 @@
 #! /bin/bash
 
+declare -A ConfigArray
+#系统名称
+systemName=""
+#系统版本号
+systemVersion=0
 
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
@@ -148,6 +153,8 @@ function CentOS6_YUM()
 }
 function Change_YUM()
 {
+    test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
+        echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127
     filenameBak=${ConfigArray[yumfilepath]}.bak
     filename=${ConfigArray[yumfilepath]}
 #    test ! -f ${filename} && \ 
@@ -183,6 +190,6 @@ function Change_YUM()
 	#解决方法很简单，下载导入公钥就行，下载导入key的命令如下：
 	#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654 #此处F42ED6FBAB17C654需要是错误提示的key
 }
-declare -A ConfigArray
+
 Check_Library
 Change_YUM

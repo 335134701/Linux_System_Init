@@ -1,5 +1,11 @@
 #! /bin/bash
 
+declare -A ConfigArray
+#系统名称
+systemName=""
+#系统版本号
+systemVersion=0
+
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
 {
@@ -71,6 +77,8 @@ function CentOS_Software(){
 }
 #默认软件安装
 function Default_Software(){
+    test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
+        echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127
 	case "${systemName}" in
 		Raspbian)
 			Raspbian_Software
@@ -88,6 +96,5 @@ function Default_Software(){
 	Log -I "Default_Software() 函数执行完成!"
 }
 
-declare -A ConfigArray
 Check_Library
 Default_Software

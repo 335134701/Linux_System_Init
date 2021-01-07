@@ -1,5 +1,11 @@
 #! /bin/bash
 
+declare -A ConfigArray
+#系统名称
+systemName=""
+#系统版本号
+systemVersion=0
+
 #校验库文件Ubuntu_Library.sh是否存在
 function Check_Library()
 {
@@ -19,6 +25,7 @@ function Check_Library()
 function Raspbian_UnUseSoftware()
 {
     Log -I "暂未找到无用软件!"
+    echo
 }
 #Ubuntu卸载无用软件
 function Ubuntu_UnUseSoftware()
@@ -63,6 +70,8 @@ function CentOS_UnUseSoftware()
 #以下函数还可以进行优化处理，优化方式是形成函数
 #卸载Ubuntu默认，无用软件
 function Remove_Unusing_Software(){
+    test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
+        echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127
 	case "${systemName}" in
 		Raspbian)
 			Raspbian_UnUseSoftware
@@ -79,7 +88,5 @@ function Remove_Unusing_Software(){
 	esac
 	Log -I "Remove_Unusing_Software() 方法执行完成!"
 }
-
-declare -A ConfigArray
 Check_Library
 Remove_Unusing_Software
