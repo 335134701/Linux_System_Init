@@ -67,10 +67,25 @@ function Set_Static_IP()
     filename=${ConfigArray[staticIPpath]}
     test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
-   	Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
-	Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
-	Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
-	Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"
+	case "${systemName}" in
+		Raspbian)		
+			Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
+			Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
+			Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
+			Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"	
+		;;
+		Ubuntu)
+			Log -D "调试中。。。。。。"
+		;;
+		CentOS)
+			Log -D "调试中。。。。。。"
+		;;
+		*)
+			Log -E "未知系统!"
+		;;
+	esac
+	Log -I "Set_Static_IP() 函数执行完成!"
+	echo
 }
 function Raspbian_Config(){
 	#第1步:开启vncserver,需要注意如下几点:
@@ -95,51 +110,50 @@ function Ubuntu_Config(){
 	sudo dpkg-reconfigure dash
 	#根据引导程序配置文件判断出电脑系统类型，并判定是否需要修改配置文件
 	#GRUB2 开机界面配置文件,去掉不必要的开机选项
-	fileName=/boot/grub/grub.cfg
-	if [ -f "${fileName}" ]; then
-		local startLine=$(grep -n -E "^### BEGIN /etc/grub.d/20_memtest86\+ ###" ${fileName} | cut -d ":" -f1)
-		local endLine=$(grep -n -E "^### END /etc/grub.d/20_memtest86\+ ###" ${fileName} | cut -d ":" -f1)
-		test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
-		test $((${endLine}-${startLine})) -gt 5 &&  \
-			sudo sed -i -e "$((${startLine}+1)),$((${endLine}-1)) d" ${fileName} && \
-			Log -I "### BEGIN /etc/grub.d/20_memtest86+ ### 文本处理成功!"
-		startLine=$(grep -n -E "^submenu 'Advanced options for Ubuntu'" ${fileName} | cut -d ":" -f1)
-		endLine=$(grep -n -E "^### END /etc/grub.d/10_linux ###" ${fileName} | cut -d ":" -f1)
-		test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
-		test $((${endLine}-${startLine})) -gt 5 &&  \
-			sudo sed -i -e "${startLine},$((${endLine}-1)) d" ${fileName} && \
-			Log -I "### BEGIN /etc/grub.d/10_linux ### 文本处理成功!"
-		startLine=$(grep -n -E "^### BEGIN /etc/grub.d/30_os-prober ###" ${fileName} | cut -d ":" -f1)
-		endLine=$(grep -n -E "^### END /etc/grub.d/30_os-prober ###" ${fileName} | cut -d ":" -f1)
-		test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
-		test $((${endLine}-${startLine})) -gt 5 &&  \
-			fileName=/etc/default/grub && \
+	filename=${ConfigArray[grubcfgpath]}
+    test ! -f ${filename} && \
+        Log -E "${filename} 文件不存在!" &&  exit 90
+	local startLine=$(grep -n -E "^### BEGIN /etc/grub.d/20_memtest86\+ ###" ${filename} | cut -d ":" -f1)
+	local endLine=$(grep -n -E "^### END /etc/grub.d/20_memtest86\+ ###" ${filename} | cut -d ":" -f1)
+	test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
+	test $((${endLine}-${startLine})) -gt 5 &&  \
+		sudo sed -i -e "$((${startLine}+1)),$((${endLine}-1)) d" ${filename} && \
+		Log -I "### BEGIN /etc/grub.d/20_memtest86+ ### 文本处理成功!"
+	startLine=$(grep -n -E "^submenu 'Advanced options for Ubuntu'" ${filename} | cut -d ":" -f1)
+	endLine=$(grep -n -E "^### END /etc/grub.d/10_linux ###" ${filename} | cut -d ":" -f1)
+	test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
+	test $((${endLine}-${startLine})) -gt 5 &&  \
+		sudo sed -i -e "${startLine},$((${endLine}-1)) d" ${filename} && \
+		Log -I "### BEGIN /etc/grub.d/10_linux ### 文本处理成功!"
+	startLine=$(grep -n -E "^### BEGIN /etc/grub.d/30_os-prober ###" ${filename} | cut -d ":" -f1)
+	endLine=$(grep -n -E "^### END /etc/grub.d/30_os-prober ###" ${filename} | cut -d ":" -f1)
+	test -z "${startLine}" -o -z "${endLine}" && startLine=0 && endLine=0
+	test $((${endLine}-${startLine})) -gt 5 &&  \
+		filename=${ConfigArray[grubpath]} && \
+    	test -f ${filename} && \
 			#设置进入GRUB选择界面后默认等待时间5S
-			sudo sed -i -e 's/'"^GRUB_TIMEOUT.*/GRUB_TIMEOUT=5"'/g' ${fileName}   && \
+			sudo sed -i -e 's/'"^GRUB_TIMEOUT.*/GRUB_TIMEOUT=5"'/g' ${filename}   && \
 			#设置默认选择系统选项Windows
-			sudo sed -i -e 's/'"^GRUB_DEFAULT.*/GRUB_DEFAULT=1"'/g' ${fileName} && \
+			sudo sed -i -e 's/'"^GRUB_DEFAULT.*/GRUB_DEFAULT=1"'/g' ${filename} && \
 			Log -I "### BEGIN /etc/grub.d/30_os-prober ### 文本处理成功!"
-	else
-		Log -E "${fileName} 文件不存在!"
-	fi
+	test ! -f ${filename} && \
+        Log -E "${filename} 文件不存在!" &&  exit 90
 	#设置不提醒系统错误
-	fileName=/etc/default/apport
-	if [ -f "${fileName}" ];then
-		test -z $(grep -n -E "^enabled=0" ${fileName}) && \
-			sudo sed -i 's/'"^enabled.*/enabled=0"'/g' ${fileName} && \
-			Log -I "设置不提示系统错误信息成功!"
-	else  
-		Log -E "${fileName} 文件不存在!"
-	fi	
+	filename=${ConfigArray[apportpath]}
+    test ! -f ${filename} && \
+		Log -E "${filename} 文件不存在!" &&  exit 90
+	test -z $(grep -n -E "^enabled=0" ${filename}) && \
+		sudo sed -i 's/'"^enabled.*/enabled=0"'/g' ${filename} && \
+		Log -I "设置不提示系统错误信息成功!"	
 	#设置禁止访客登陆
-	fileName=/usr/share/lightdm/lightdm.conf.d/50-guest-wrapper.conf
-	if [ -f "${fileName}" ];then
-		test -z $(grep -n -E "^allow-guest.*" ${fileName}) && \
-			sudo sed -i \$a"allow-guest=false"  ${fileName}  && \
-			Log -I "设置禁止访客登陆成功!"
-	else
-		Log -E "${fileName} 文件不存在!"
-	fi
+	filename=${ConfigArray[guestpath]}
+    test ! -f ${filename} && \
+		Log -E "${filename} 文件不存在!" &&  exit 90
+	test -z $(grep -n -E "^allow-guest.*" ${filename}) && \
+		sudo sed -i \$a"allow-guest=false"  ${filename}  && \
+		Log -I "设置禁止访客登陆成功!"
+	#设置静态IP
+	Set_Static_IP
 }
 function CentOS_Config(){
 	Log -D "CentOS_Config() 函数调试中。。。。。。。。"
