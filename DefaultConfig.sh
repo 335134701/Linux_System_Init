@@ -110,7 +110,6 @@ function Raspbian_Config(){
 		sudo passwd pi
 	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
 	Set_Static_IP
-	#Log -D "输出正常"
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
@@ -158,7 +157,7 @@ function Ubuntu_Config(){
 	Judge_Txt "^allow-guest.*" "allow-guest=false"
 	Log -I "设置禁止访客登陆成功!"
 	#设置静态IP
-	Set_Static_IP
+	#Set_Static_IP
 }
 function CentOS_Config(){
 	Log -D "CentOS_Config() 函数调试中。。。。。。。。"
