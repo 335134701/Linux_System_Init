@@ -30,7 +30,6 @@ function Main()
 	#Step 2: 执行欢迎函数
 	Welcome
 	for((i=0;i<${#ScriptArray[@]};i++)); do
-		Log -D ${ScriptArray[i]}
 		test ${ScriptArray[i]} != "Library.sh" -a ${ScriptArray[i]} != "${0#*/}"  && \
 			Software_Install "$(pwd)/${ScriptArray[i]}" && Update_All
 			sleep 1s
