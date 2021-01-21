@@ -168,7 +168,7 @@ function Default_Config(){
 	case "${systemName}" in
 		Raspbian)
 			Raspbian_Description
-			#Raspbian_Config
+			Raspbian_Config
 		;;
 		Ubuntu)
 			Ubuntu_Config
