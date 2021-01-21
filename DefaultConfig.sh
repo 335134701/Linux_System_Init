@@ -60,7 +60,7 @@ function Raspbian_Description()
 	echo -e "\033[34m**        注意:空格键可选择多选或取消多选                                    **\033[0m"
 	echo -e "\033[34m**      9.若SD卡空间大于树莓派显示空间,可扩展空间:                           **\033[0m"
 	echo -e "\033[34m**        Advanced Options->Al Expand Filesystem->确定                       **\033[0m"
-	echo -e "\033[34m**      10.如果VNC连接后界面无法显示,修改分辨率:                             **\033[0m"
+	echo -e "\033[34m**     10.如果VNC连接后界面无法显示,修改分辨率:                             **\033[0m"
 	echo -e "\033[34m**         Display Options->Resolution->根据需要设置分辨率->确定             **\033[0m"
 	echo -e "\033[34m**                                                                           **\033[0m"
 	echo -e "\033[34m**                                                                           **\033[0m"
@@ -79,10 +79,15 @@ function Set_Static_IP()
         Log -E "${filename} 文件不存在!" &&  exit 90
 	case "${systemName}" in
 		Raspbian)		
-			Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
-			Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
-			Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
-			Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"	
+#			Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
+#			Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
+#			Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
+#			Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"	
+			if [ ${ConfigArray[staticIPmode]} == "wlan0" ]; then
+				filename=${ConfigArray[wififilepath]}
+				test ! -f ${filename} && \
+        			Log -E "${filename} 文件不存在!" &&  exit 90
+			fi
 		;;
 		Ubuntu)
 			Log -D "调试中。。。。。。"
@@ -106,7 +111,7 @@ function Raspbian_Config(){
 	#此步骤执行目录为:/usr/bin/vncserver ;使用命令vncserver或者/usr/bin/vncserver都可以启动服务vncserver
 	#vncserver 
 	#第2步:设置界面相关选项
-	sudo raspi-config
+	#sudo raspi-config
 	#第3步:更改Pi用户密码,如果密码为原始密码或者最后修改密码时间距离现在日期大于30天,则需要修改密码
 	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 5 &&
 		echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m" && \
