@@ -43,26 +43,29 @@ function Raspbian_Description()
 	echo
 	echo
 	echo
-	echo -e "\033[34m**************************************************************************************************************\033[0m"
-	echo -e "\033[34m**                                                                                                          **\033[0m"
-	echo -e "\033[34m**                                                                                                          **\033[0m"
-	echo -e "\033[34m**                                                                                                          **\033[0m"
-	echo -e "\033[34m**  初始化界面设置相关操作:                                                                                 **\033[0m"
-	echo -e "\033[34m**      1.开启SSH:系统烧录完成后,在SD卡根目录新建SSH文件                                                    **\033[0m"
-	echo -e "\033[34m**      2.获取树莓派IP,SSH连接树莓派:User:pi;Passwd:raspberry                                               **\033[0m"
-	echo -e "\033[34m**      3.输入命令vncserver,可临时远程界面VNC Viewer连接                                                    **\033[0m"
-	echo -e "\033[34m**      4.打开vnc viewer,配置:VNC Server: IP:5900/5901; Name:pi                                             **\033[0m"
-	echo -e "\033[34m**      5.连接成功,打开命令行,输入:sudo raspi-config                                                        **\033[0m"
-	echo -e "\033[34m**      6.开机自启动SSH:Interfacing Options->SSH->是->Enter键     			                    **\033[0m"
-	echo -e "\033[34m**      7.开机自启动VNC:Interfacing Options->VNC->是->Enter键                                               **\033[0m"
-	echo -e "\033[34m**      8.设置中文环境:Localisation Option-> Locale->选择:zh_CN.GB2312;zh_CN.GB18030;zh_GBK;zh_CN.UTF-8->OK **\033[0m"
-	echo -e "\033[34m**        注意:空格键可选择多选或取消多选                                                                   **\033[0m"
-	echo -e "\033[34m**      9.若SD卡空间大于树莓派显示空间,可扩展空间:Advanced Options->Al Expand Filesystem->确定              **\033[0m"
-	echo -e "\033[34m**      10.如果VNC连接后界面无法显示,修改分辨率:Display Options->Resolution->根据需要设置分辨率->确定       **\033[0m"
-	echo -e "\033[34m**                                                                                                          **\033[0m"
-	echo -e "\033[34m**                                                                                                          **\033[0m"
-	echo -e "\033[34m**                                                                                                          **\033[0m"
-	echo -e "\033[34m**************************************************************************************************************\033[0m"
+	echo -e "\033[34m*******************************************************************************\033[0m"
+	echo -e "\033[34m**                                                                           **\033[0m"
+	echo -e "\033[34m**                                                                           **\033[0m"
+	echo -e "\033[34m**                                                                           **\033[0m"
+	echo -e "\033[34m**  初始化界面设置相关操作:                                                  **\033[0m"
+	echo -e "\033[34m**      1.开启SSH:系统烧录完成后,在SD卡根目录新建SSH文件                     **\033[0m"
+	echo -e "\033[34m**      2.获取树莓派IP,SSH连接树莓派:User:pi;Passwd:raspberry                **\033[0m"
+	echo -e "\033[34m**      3.输入命令vncserver,可临时远程界面VNC Viewer连接                     **\033[0m"
+	echo -e "\033[34m**      4.打开vnc viewer,配置:VNC Server: IP:5900/5901; Name:pi              **\033[0m"
+	echo -e "\033[34m**      5.连接成功,打开命令行,输入:sudo raspi-config                         **\033[0m"
+	echo -e "\033[34m**      6.开机自启动SSH:Interfacing Options->SSH->是->Enter键                **\033[0m"
+	echo -e "\033[34m**      7.开机自启动VNC:Interfacing Options->VNC->是->Enter键                **\033[0m"
+	echo -e "\033[34m**      8.设置中文环境:Localisation Option-> Locale                          **\033[0m"
+	echo -e "\033[34m**        ->选择:zh_CN.GB2312;zh_CN.GB18030;zh_GBK;zh_CN.UTF-8->OK           **\033[0m"
+	echo -e "\033[34m**        注意:空格键可选择多选或取消多选                                    **\033[0m"
+	echo -e "\033[34m**      9.若SD卡空间大于树莓派显示空间,可扩展空间:                           **\033[0m"
+	echo -e "\033[34m**        Advanced Options->Al Expand Filesystem->确定                       **\033[0m"
+	echo -e "\033[34m**      10.如果VNC连接后界面无法显示,修改分辨率:                             **\033[0m"
+	echo -e "\033[34m**         Display Options->Resolution->根据需要设置分辨率->确定             **\033[0m"
+	echo -e "\033[34m**                                                                           **\033[0m"
+	echo -e "\033[34m**                                                                           **\033[0m"
+	echo -e "\033[34m**                                                                           **\033[0m"
+	echo -e "\033[34m*******************************************************************************\033[0m"
 	echo
 	echo
 	echo
@@ -105,7 +108,7 @@ function Raspbian_Config(){
 	#第2步:设置界面相关选项
 	sudo raspi-config
 	#第3步:更改Pi用户密码,如果密码为原始密码或者最后修改密码时间距离现在日期大于30天,则需要修改密码
-	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 31 &&
+	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 5 &&
 		echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m" && \
 		sudo passwd pi
 	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
