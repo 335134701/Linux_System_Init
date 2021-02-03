@@ -190,6 +190,5 @@ function Change_YUM()
 	#解决方法很简单，下载导入公钥就行，下载导入key的命令如下：
 	#sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654 #此处F42ED6FBAB17C654需要是错误提示的key
 }
-
 Check_Library
 Change_YUM
