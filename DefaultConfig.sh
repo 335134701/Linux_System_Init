@@ -137,6 +137,7 @@ function Raspbian_Config(){
         Log -E "${filename} 文件不存在!" &&  exit 90
 	#获取原来的端口号
 	local oldsshPort=$(sudo egrep -n "^#*Port.*" ${filename} | cut -d " " -f 2)
+	#根据配置文件决定是否修改端口号
 	Judge_Txt "^#*Port.*" "Port ${ConfigArray[sshport]}"
 }
 function Ubuntu_Config(){
