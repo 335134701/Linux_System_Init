@@ -172,7 +172,7 @@ function Judge_Txt()
 		echo ${2} > ${filename} && return 0
 	test ! -f ${filename} && Log -E "${filename} 文件不存在!" && exit 90
 	#查找以${1}开头的内容
-	result=(`sudo grep -E -n "${1}" ${filename} | cut -d ":" -f1`)
+	result=(`sudo egrep -n "${1}" ${filename} | cut -d ":" -f1`)
 	test -z "${result}" -a ${#} -eq 2 && \
 		sudo sed -i \$a"${2}"  ${filename}  && \
 		Judge_Order "sudo sed -i \$a\"${2}\"  ${filename}" 0 && return 0

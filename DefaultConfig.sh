@@ -136,16 +136,8 @@ function Raspbian_Config(){
 	test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
 	#获取原来的端口号
-	local oldsshPort=$(sudo grep -E -n ^Port ${filename} | cut -d " " -f 2)
-	
-	if [ -n "${oldsshPort}" ]; then
-		test ${oldsshPort} -ne ${ConfigArray[sshport]} && \
-			Judge_Txt "^Port.*" "Port ${ConfigArray[sshport]}"
-	else
-		oldsshPort=$(sudo grep -E -n ^\#Port ${filename} | cut -d " " -f 2)
-		test ${oldsshPort} -ne ${ConfigArray[sshport]} && \
-			Judge_Txt "^#Port.*" "Port ${ConfigArray[sshport]}"
-	fi
+	local oldsshPort=$(sudo egrep -n "^#*Port.*" ${filename} | cut -d " " -f 2)
+	Judge_Txt "^#*Port.*" "Port ${ConfigArray[sshport]}"
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
