@@ -78,8 +78,12 @@ function Set_Static_IP()
     test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
 	case "${systemName}" in
-		Raspbian)		
-			if [ ${ConfigArray[staticIPmode]} == "wlan0" ]; then
+		Raspbian)	
+			Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
+			Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
+			Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
+			Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"	
+			if [ ${ConfigArray[staticIPmode]} == "wlan0" ]; then	
 				filename=${ConfigArray[wififilepath]}
 				test ! -f ${filename} && \
         			Log -E "${filename} 文件不存在!" &&  exit 90
@@ -88,6 +92,7 @@ function Set_Static_IP()
 					sudo sed -i "$((${tmp}+1))c  \        psk=\"${ConfigArray[wifipasswd]}\"" ${filename}
 					Judge_Order "sudo sed -i psk=\"${ConfigArray[wifipasswd]}\" ${filename}" 0
 				else
+					sudo chmod 666 ${filename}
 					cat  << EOF >> ${filename}
 network={
 	ssid="${ConfigArray[wifiname]}"
@@ -95,12 +100,9 @@ network={
 	key_mgmt=WPA-PSK
 }
 EOF
+				sudo chmod 600 ${filename}
 				fi								
 			fi
-			Judge_Txt "^interface.*" "interface ${ConfigArray[staticIPmode]}"
-			Judge_Txt "^static ip_address.*" "static ip_address=${ConfigArray[ip_address]}"
-			Judge_Txt "^static routers.*" "static routers=${ConfigArray[routers]}"
-			Judge_Txt "^static domain_name_servers.*" "static domain_name_servers=${ConfigArray[domain_name_servers]}"	
 		;;
 		Ubuntu)
 			Log -D "调试中。。。。。。"
@@ -126,9 +128,9 @@ function Raspbian_Config(){
 	#第2步:设置界面相关选项
 #	sudo raspi-config
 	#第3步:更改Pi用户密码,如果密码为原始密码或者最后修改密码时间距离现在日期大于30天,则需要修改密码
-#	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 5 &&
-#		echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m" && \
-#		sudo passwd pi
+	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 5 &&
+		echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m" && \
+		sudo passwd pi
 	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
 #	Set_Static_IP
 	#第五步:更改SSH端口号
@@ -138,7 +140,14 @@ function Raspbian_Config(){
 	#获取原来的端口号
 	local oldsshPort=$(sudo egrep -n "^#*Port.*" ${filename} | cut -d " " -f 2)
 	#根据配置文件决定是否修改端口号
-	Judge_Txt "^#*Port.*" "Port ${ConfigArray[sshport]}"
+	test ${oldsshPort} -ne ${ConfigArray[sshport]} && \
+		Judge_Txt "^#*Port.*" "Port ${ConfigArray[sshport]}"
+	##第六步:解决无线鼠标不灵敏问题，添加配置文件
+	filename=${ConfigArray[mousefilepath]}
+	test ! -f ${filename} && \
+        Log -E "${filename} 文件不存在!" &&  exit 90
+	test -z "$(sudo egrep -n "usbhid.mousepoll=0" ${filename})" && \
+		Judge_Txt "plymouth.ignore-serial-consoles" "plymouth.ignore-serial-consoles usbhid.mousepoll=0 "
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
