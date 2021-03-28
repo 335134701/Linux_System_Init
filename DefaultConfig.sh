@@ -117,6 +117,42 @@ EOF
 	Log -I "Set_Static_IP() 函数执行完成!"
 	echo
 }
+#配置Vsftpd
+function Config_Vsftpd(){
+    filename=${ConfigArray[vsftpfilepath]}
+    test ! -f ${filename} && \
+        Log -E "${filename} 文件不存在!" &&  exit 90
+	case "${systemName}" in
+		Raspbian)
+			Judge_Txt "anonymous_enable.*" "anonymous_enable=NO"
+			Judge_Txt "#write_enable.*" "write_enable=YES"
+			Judge_Txt "local_root.*" "local_root=${ConfigArray[vsftdir]}"
+			Judge_Txt "allow_writeable_chroot.*" "allow_writeable_chroot=YES"
+			Judge_Txt "#local_umask" "local_umask"
+			Judge_Txt "#xferlog_file" "xferlog_file"
+			Judge_Txt "#xferlog_std_format" "xferlog_std_format"
+			Judge_Txt "#idle_session_timeout" "idle_session_timeout"
+			Judge_Txt "#data_connection_timeout" "data_connection_timeout"
+			Judge_Txt "#ftpd_banner" "ftpd_banner"
+			Judge_Txt "#chroot_local.*" "chroot_local_user=YES"
+			Judge_Txt "#chroot_list_enable.*" "chroot_list_enable=NO"
+			Judge_Txt "#utf8_filesystem" "utf8_filesystem"
+			sudo service vsftpd start
+			Judge_Order "sudo service vsftpd start" 0
+			;;
+		Ubuntu)
+			Log -D "调试中。。。。。。"
+		;;
+		CentOS)
+			Log -D "调试中。。。。。。"
+		;;
+		*)
+			Log -E "未知系统!"
+		;;
+	esac
+	Log -I "Config_Vsftpd() 函数执行完成!"
+	echo	
+}
 function Raspbian_Config(){
 	#第1步:开启vncserver,需要注意如下几点:
 	#需要注意的是:此服务在raspi-config 中设置好后默认是启动(若服务未启动，可以重启系统)，无需再手动启动，若默认启动失败，则可以手动启动
@@ -142,12 +178,15 @@ function Raspbian_Config(){
 	#根据配置文件决定是否修改端口号
 	test ${oldsshPort} -ne ${ConfigArray[sshport]} && \
 		Judge_Txt "^#*Port.*" "Port ${ConfigArray[sshport]}"
-	##第六步:解决无线鼠标不灵敏问题，添加配置文件
+	#第六步:解决无线鼠标不灵敏问题，添加配置文件
 	filename=${ConfigArray[mousefilepath]}
 	test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
 	test -z "$(sudo egrep -n "usbhid.mousepoll=0" ${filename})" && \
 		Judge_Txt "plymouth.ignore-serial-consoles" "plymouth.ignore-serial-consoles usbhid.mousepoll=0 "
+	#第七步:安装vsftpd并配置相应参数
+	Default_Install  "vsftpd"
+	Config_Vsftpd
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
