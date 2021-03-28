@@ -128,7 +128,6 @@ function Config_Vsftpd(){
 			Judge_Txt "#write_enable.*" "write_enable=YES"
 			Judge_Txt "local_root.*" "local_root=${ConfigArray[vsftdir]}"
 			Judge_Txt "allow_writeable_chroot.*" "allow_writeable_chroot=YES"
-			Judge_Txt "#local_umask" "local_umask"
 			Judge_Txt "#xferlog_file" "xferlog_file"
 			Judge_Txt "#xferlog_std_format" "xferlog_std_format"
 			Judge_Txt "#idle_session_timeout" "idle_session_timeout"
@@ -137,8 +136,6 @@ function Config_Vsftpd(){
 			Judge_Txt "#chroot_local.*" "chroot_local_user=YES"
 			Judge_Txt "#chroot_list_enable.*" "chroot_list_enable=NO"
 			Judge_Txt "#utf8_filesystem" "utf8_filesystem"
-			sudo service vsftpd start
-			Judge_Order "sudo service vsftpd start" 0
 			;;
 		Ubuntu)
 			Log -D "调试中。。。。。。"
@@ -185,8 +182,11 @@ function Raspbian_Config(){
 	test -z "$(sudo egrep -n "usbhid.mousepoll=0" ${filename})" && \
 		Judge_Txt "plymouth.ignore-serial-consoles" "plymouth.ignore-serial-consoles usbhid.mousepoll=0 "
 	#第七步:安装vsftpd并配置相应参数
-	Default_Install  "vsftpd"
-	Config_Vsftpd
+	$(vsftpd -v >/dev/null 2>&1)
+	test ${?} -ne 0 && \
+		Default_Install  "vsftpd" && Config_Vsftpd && \
+		sudo service vsftpd restart && \
+		Judge_Order "sudo service vsftpd restart" 0
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
