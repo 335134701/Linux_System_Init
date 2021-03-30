@@ -182,7 +182,6 @@ function Raspbian_Config(){
 	test -z "$(sudo egrep -n "usbhid.mousepoll=0" ${filename})" && \
 		Judge_Txt "plymouth.ignore-serial-consoles" "plymouth.ignore-serial-consoles usbhid.mousepoll=0 "
 	#第七步:安装vsftpd并配置相应参数
-#	$(vsftpd -v >/dev/null 2>&1)
 	test ! -f '/usr/sbin/vsftpd' &&  \
 		Default_Install  "vsftpd" && Config_Vsftpd && \
 		sudo service vsftpd restart && \
