@@ -24,7 +24,7 @@ function Check_Library()
 #树莓派安装第三方应用软件
 function Raspbian_ThirdPart_Software()
 {
-    Log -D "Raspbian_ThirdPart_Software() 函数调试中。。。。。。。。"
+	#第1步:安装JDK
 }
 #Ubuntu安装第三方应用软件
 function Ubuntu_ThirdPart_Software()

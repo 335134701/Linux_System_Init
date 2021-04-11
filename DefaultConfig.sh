@@ -125,7 +125,7 @@ function Raspbian_Config(){
 	#-kill :1  	后面的1对应的是手动启动的ID,系统自启动的是没有具体ID的，因此无法使用命令:vncserver -kill :1 停止vncserver服务
 	#系统启动的vncserver服务可以使用命令查看具体进程:ps -ef | grep vncserver;如果不清楚注释可以使用此命令查看手动启动服务和系统启动区别
 	#此步骤执行目录为:/usr/bin/vncserver ;使用命令vncserver或者/usr/bin/vncserver都可以启动服务vncserver
-	#vncserver 
+	vncserver 
 	#第2步:设置界面相关选项
 	sudo raspi-config
 	#第3步:更改Pi用户密码,如果密码为原始密码或者最后修改密码时间距离现在日期大于30天,则需要修改密码

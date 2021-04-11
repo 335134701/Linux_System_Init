@@ -247,17 +247,17 @@ function  Determine_SoftwareFold_Exist()
 {
 	test ${#} -ne 1 && \
 	Log -E "函数传入参数错误!" && return 80
-	if [ -d "${HOME}/Software" ];then
-		Log -W "${HOME}/Software 目录已存在!"
+	if [ -d "${softwareRootDir}" ];then
+		Log -W "${softwareRootDir} 目录已存在!"
 	else
-		mkdir ${HOME}/Software
-		Log -I "${HOME}/Software 目录创建成功!"
+		mkdir -p ${softwareRootDir}
+		Log -I "${softwareRootDir} 目录创建成功!"
 	fi
-	if [ -d "${HOME}/Software/${1}" ];then
-		Log -W "${HOME}/Software/${1} 目录已存在!"
+	if [ -d "${softwareRootDir}/${1}" ];then
+		Log -W "${softwareRootDir}/${1} 目录已存在!"
 	else
-		mkdir ${HOME}/Software/${1}
-		Log -I "${HOME}/Software/${1} 目录创建成功!"	
+		mkdir -p ${softwareRootDir}/${1}
+		Log -I "${softwareRootDir}/${1} 目录创建成功!"	
 	fi
 }
 #安装默认软件处理函数

@@ -134,8 +134,11 @@ function Raspbian_Software(){
 		sudo service vsftpd restart && \
 		Judge_Order "sudo service vsftpd restart" 0
 	#第13步:配置防火墙
-	test ! -f '/usr/sbin/ufw' && Default_Install  "ufw"
-	Config_Iptables
+	test ! -f '/usr/sbin/ufw' && Default_Install  "ufw" && \
+		Config_Iptables
+	#第13步:安装JDK
+	Default_AutoRemove "default-jdk"
+	Default_Install "openjdk-8-jdk"
 }
 #Ubuntu默认软件安装
 function Ubuntu_Software(){
