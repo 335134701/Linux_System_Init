@@ -117,86 +117,7 @@ EOF
 	Log -I "Set_Static_IP() 函数执行完成!"
 	echo
 }
-#配置Vsftpd
-function Config_Vsftpd(){
-    filename=${ConfigArray[vsftpfilepath]}
-    test ! -f ${filename} && \
-        Log -E "${filename} 文件不存在!" &&  exit 90
-	case "${systemName}" in
-		Raspbian)
-			Judge_Txt "anonymous_enable.*" "anonymous_enable=NO"
-			Judge_Txt "#write_enable.*" "write_enable=YES"
-			Judge_Txt "local_root.*" "local_root=${ConfigArray[vsftdir]}"
-			Judge_Txt "allow_writeable_chroot.*" "allow_writeable_chroot=YES"
-			Judge_Txt "#xferlog_file" "xferlog_file"
-			Judge_Txt "#xferlog_std_format" "xferlog_std_format"
-			Judge_Txt "#idle_session_timeout" "idle_session_timeout"
-			Judge_Txt "#data_connection_timeout" "data_connection_timeout"
-			Judge_Txt "#ftpd_banner" "ftpd_banner"
-			Judge_Txt "#chroot_local.*" "chroot_local_user=YES"
-			Judge_Txt "#chroot_list_enable.*" "chroot_list_enable=NO"
-			Judge_Txt "#utf8_filesystem" "utf8_filesystem"
-			;;
-		Ubuntu)
-			Log -D "调试中。。。。。。"
-		;;
-		CentOS)
-			Log -D "调试中。。。。。。"
-		;;
-		*)
-			Log -E "未知系统!"
-		;;
-	esac
-	Log -I "Config_Vsftpd() 函数执行完成!"
-	echo	
-}
-#配置防火墙
-function Config_Iptables(){
-	case "${systemName}" in
-		Raspbian)
-			#启用防火墙
-			sudo ufw enable
-			#关闭外部对本机访问   
-			sudo ufw default deny
-			Judge_Order "sudo ufw default deny" 0
-			sudo ufw allow ${ConfigArray[sshport]}
-			Judge_Order "sudo ufw allow ${ConfigArray[sshport]}" 0
-			sudo ufw allow ${ConfigArray[vsftpport]}
-			Judge_Order "sudo ufw allow ${ConfigArray[vsftpport]}" 0
-			sudo ufw allow ${ConfigArray[vsftpdataport]}
-			Judge_Order "sudo ufw allow ${ConfigArray[vsftpdataport]}" 0
-			sudo ufw allow ${ConfigArray[mysqlport]}
-			Judge_Order "sudo ufw allow ${ConfigArray[mysqlport]}" 0
-			sudo ufw allow ${ConfigArray[vncserverport]}
-			Judge_Order "sudo ufw allow ${ConfigArray[vncserverport]}" 0
-			#以下是防火墙相关操作说明:
-				#sudo ufw allow 80 允许外部访问80端口
-				#sudo ufw delete allow 80 禁止外部访问80 端口
-				#sudo ufw allow from 192.168.1.1 允许此IP访问所有的本机端口
-				#sudo ufw deny smtp 禁止外部访问smtp服务
-				#sudo ufw delete allow smtp 删除上面建立的某条规则
-				#ufw deny proto tcp from 10.0.0.0/8 to 192.168.0.1 port要拒绝所有的流量从TCP的10.0.0.0/8 到端口22的地址192.168.0.1
-				#可以允许所有RFC1918网络（局域网/无线局域网的）访问这个主机（/8,/16,/12是一种网络分级）：
-				#sudo ufw allow from 10.0.0.0/8
-				#sudo ufw allow from 172.16.0.0/12
-				#sudo ufw allow from 192.168.0.0/16
-				#配置允许的端口范围 
-				#sudo ufw allow 6000:6007/tcp 
-				#sudo ufw allow 6000:6007/udp
-			;;
-		Ubuntu)
-			Log -D "调试中。。。。。。"
-		;;
-		CentOS)
-			Log -D "调试中。。。。。。"
-		;;
-		*)
-			Log -E "未知系统!"
-		;;
-	esac
-	Log -I "Config_Iptables() 函数执行完成!"
-	echo
-}
+
 function Raspbian_Config(){
 	#第1步:开启vncserver,需要注意如下几点:
 	#需要注意的是:此服务在raspi-config 中设置好后默认是启动(若服务未启动，可以重启系统)，无需再手动启动，若默认启动失败，则可以手动启动
@@ -213,7 +134,7 @@ function Raspbian_Config(){
 		sudo passwd pi
 	#第4步:设置静态IP地址(此步骤需要提前获取局域网IP相关信息)
 	Set_Static_IP
-	#第五步:更改SSH端口号
+	#第5步:更改SSH端口号
 	filename=${ConfigArray[sshfilepath]}
 	test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
@@ -222,20 +143,12 @@ function Raspbian_Config(){
 	#根据配置文件决定是否修改端口号
 	test ${oldsshPort} -ne ${ConfigArray[sshport]} && \
 		Judge_Txt "^#*Port.*" "Port ${ConfigArray[sshport]}"
-	#第六步:解决无线鼠标不灵敏问题，添加配置文件
+	#第6步:解决无线鼠标不灵敏问题，添加配置文件
 	filename=${ConfigArray[mousefilepath]}
 	test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
 	test -z "$(sudo egrep -n "usbhid.mousepoll=0" ${filename})" && \
 		Judge_Txt "plymouth.ignore-serial-consoles" "plymouth.ignore-serial-consoles usbhid.mousepoll=0 "
-	#第七步:安装vsftpd并配置相应参数
-	test ! -f '/usr/sbin/vsftpd' &&  \
-		Default_Install  "vsftpd" && Config_Vsftpd && \
-		sudo service vsftpd restart && \
-		Judge_Order "sudo service vsftpd restart" 0
-	#第八步:配置防火墙
-	test ! -f '/usr/sbin/ufw' && Default_Install  "ufw"
-	Config_Iptables
 }
 function Ubuntu_Config(){
 	#设置为no，更改默认dash为bash
