@@ -27,6 +27,7 @@ function Config_Vsftpd(){
     filename=${ConfigArray[vsftpfilepath]}
     test ! -f ${filename} && \
         Log -E "${filename} 文件不存在!" &&  exit 90
+	mkdir -p ${ConfigArray[vsftdir]}
 	case "${systemName}" in
 		Raspbian)
 			Judge_Txt "anonymous_enable.*" "anonymous_enable=NO"
