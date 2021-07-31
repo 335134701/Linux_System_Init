@@ -14,10 +14,10 @@ function Check_Library()
 		echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  当前目录:$(pwd),库文件(Library.sh)不存在,程序无法继续执行!"
 		exit 90
 	else
-        . $(pwd)/Library.sh
+        	. $(pwd)/Library.sh
 		Log -I "当前目录:$(pwd),库文件(Library.sh)存在,程序将开始执行!" && echo
-        SystemInformation
-        ParseConfigurationFile
+		SystemInformation
+		ParseConfigurationFile
 	fi
 	echo
 }
@@ -25,16 +25,17 @@ function Check_Library()
 function Raspbian_ThirdPart_Software()
 {
 	#第1步:安装JDK
+	Log -D "Raspbian_ThirdPart_Software() 函数调试中。。。。。。。。"
 }
 #Ubuntu安装第三方应用软件
 function Ubuntu_ThirdPart_Software()
 {
-    Log -D "Ubuntu_ThirdPart_Software() 函数调试中。。。。。。。。"
+	Log -D "Ubuntu_ThirdPart_Software() 函数调试中。。。。。。。。"
 }
 #CentOS安装第三方应用软件
 function CentOS_ThirdPart_Software()
 {
-    Log -D "CentOS_ThirdPart_Software() 函数调试中。。。。。。。。"
+	Log -D "CentOS_ThirdPart_Software() 函数调试中。。。。。。。。"
 }
 
 #以下函数还可以进行优化处理，优化方式是形成函数
