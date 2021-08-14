@@ -24,18 +24,17 @@ function Check_Library()
 #树莓派安装第三方应用软件
 function Raspbian_ThirdPart_Software()
 {
-	#第1步:安装JDK
-	Log -D "Raspbian_ThirdPart_Software() 函数调试中。。。。。。。。"
+	Run_SHFile "ThirdPartSoftware/Raspbian/RaspbianSoftware.sh"
 }
 #Ubuntu安装第三方应用软件
 function Ubuntu_ThirdPart_Software()
 {
-	Log -D "Ubuntu_ThirdPart_Software() 函数调试中。。。。。。。。"
+	Run_SHFile "ThirdPartSoftware/Ubuntu/UbuntuSoftware.sh"
 }
 #CentOS安装第三方应用软件
 function CentOS_ThirdPart_Software()
 {
-	Log -D "CentOS_ThirdPart_Software() 函数调试中。。。。。。。。"
+	Run_SHFile "ThirdPartSoftware/CentOS/CentOSSoftware.sh"
 }
 
 #以下函数还可以进行优化处理，优化方式是形成函数
@@ -43,8 +42,8 @@ function CentOS_ThirdPart_Software()
 function Install_ThirdPart_Software(){
     test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
         echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127
-	test ! -d $(pwd)/ThirdPartySoftware/${systemName} &&  \
-		Log -E "目录 $(pwd)/ThirdPartySoftware/${systemName} 不存在,程序无法继续执行!" &&  exit 91
+	test ! -d $(pwd)/ThirdPartSoftware/${systemName} &&  \
+		Log -E "目录 $(pwd)/ThirdPartSoftware/${systemName} 不存在,程序无法继续执行!" &&  exit 91
 	case "${systemName}" in
 		Raspbian)
 			Raspbian_ThirdPart_Software

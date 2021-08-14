@@ -284,3 +284,16 @@ function Default_AutoRemove(){
 		Judge_Order "sudo yum autoremove ${1} -y" 1
 	fi
 }
+
+#执行其他脚本文件
+#${1}:脚本文件名称及目录
+function Run_SHFile()
+{
+	if [ -f $(pwd)/${1} ];then
+		sudo chmod 755 ${1}
+		${1}
+		Judge_Order ${1} 1
+	else
+		Log -E "$(pwd)/${1} 脚本不存在!"
+	fi
+}
