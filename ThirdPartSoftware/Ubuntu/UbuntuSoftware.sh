@@ -35,11 +35,13 @@ function Chrome_Install()
 	Judge_Order "sudo dpkg -i ${currentDir}/google-chrome.deb" 0
 	#实现命令行输入chrome即可启动谷歌浏览器
 	filename=${HOME}/.bashrc
-	Judge_Txt "export\ PATH=\/opt\/google\/chrome:\$PATH"
-	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654
-	Judge_Order "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654" 1
-	sudo rm -rf${currentDir}/google-chrome.deb
+	Judge_Txt 'export\ PATH=\/opt\/google\/chrome:\$PATH' "export\ PATH=\/opt\/google\/chrome:\$PATH"
+#	sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654
+#	Judge_Order "sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654" 1
+	sudo rm -rf ${currentDir}/google-chrome.deb
 	Judge_Order "sudo rm -rf ${currentDir}/google-chrome.deb" 1
+	#启动谷歌浏览器
+	/usr/bin/google-chrome-stable
 }
 
 function UbuntuSoftware(){
