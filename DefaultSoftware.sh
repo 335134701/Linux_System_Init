@@ -145,9 +145,11 @@ function Raspbian_Software(){
 function Ubuntu_Software(){
 	#第1步:安装vim编辑器，Ubunutu14 由于vim-common库版本冲突，无法安装vim，需要卸载库再进行安装
 	#f附加安装nautilus-open-terminal，Ubunut14默认右键中无法打开终端
+	#Ubuntu14 安装openssh-server时依赖openssh-client版本存在问题，需要安装相应的版本
 	if [ ${systemVersion} -eq 14 ]; then
 		Default_Install  "nautilus-open-terminal"
 		Default_AutoRemove "vim-common"		
+		Default_Install  "openssh-client=1:6.6p1-2ubuntu1"
 	fi
 	Default_Install  "vim"
 	#第2步:安装gedit编辑器
@@ -164,6 +166,8 @@ function Ubuntu_Software(){
 	Default_Install  "cmake"
 	#第8步:安装git工具
 	Default_Install  "git"
+	#第9步:安装openssh-server
+	Default_Install  "openssh-server"
 }
 #CentOS默认软件安装
 function CentOS_Software(){
