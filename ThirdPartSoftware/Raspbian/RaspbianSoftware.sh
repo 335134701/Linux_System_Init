@@ -24,7 +24,7 @@ function Check_Library()
 
 function RaspbianSoftware(){
 	#第一步:安装JDK
-    sudo apt install openjdk-8-jdk -y
+    sudo apt-get install openjdk-8-jdk -y
 	Judge_Order "sudo apt install openjdk-8-jdk -y" 1
 }
 
