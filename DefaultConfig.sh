@@ -60,7 +60,7 @@ function Raspbian_Description()
 	echo -e "\033[34m**        注意:空格键可选择多选或取消多选                                    **\033[0m"
 	echo -e "\033[34m**      9.若SD卡空间大于树莓派显示空间,可扩展空间:                           **\033[0m"
 	echo -e "\033[34m**        Advanced Options->Al Expand Filesystem->确定                       **\033[0m"
-	echo -e "\033[34m**     10.如果VNC连接后界面无法显示,修改分辨率:                             **\033[0m"
+	echo -e "\033[34m**     10.如果VNC连接后界面无法显示,修改分辨率:                              **\033[0m"
 	echo -e "\033[34m**         Display Options->Resolution->根据需要设置分辨率->确定             **\033[0m"
 	echo -e "\033[34m**                                                                           **\033[0m"
 	echo -e "\033[34m**                                                                           **\033[0m"
