@@ -140,6 +140,13 @@ function Raspbian_Software(){
 	#第13步:安装JDK
 	Default_AutoRemove "default-jdk"
 	Default_Install "openjdk-8-jdk"
+	#第14步:安装gdbserver
+	Default_Install "gdbserver"
+	#第15步:安装qt
+	Default_Install "qt5-default"
+	Default_Install "qtcreator"
+	Default_Install "qtmultimedia5-dev"
+	Default_Install "libqt5serialport5-dev"
 }
 #Ubuntu默认软件安装
 function Ubuntu_Software(){
