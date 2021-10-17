@@ -12,7 +12,6 @@
 	# 127:表示命令执行失败
 #**********************************************************
 
-
 INFOTime="[\033[32m$(date +"%Y-%m-%d %T") Info\033[0m]  "
 WARNTime="[\033[33m$(date +"%Y-%m-%d %T") Warning\033[0m]  "
 DEBUGTime="[\033[34m$(date +"%Y-%m-%d %T") Warning\033[0m]  "
@@ -20,7 +19,7 @@ ERRORTime="[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  "
 userName=${USER}
 softwareRootDir=${HOME}/Software
 softwareDir=${HOME}/Software
-configFile=$(pwd)/Linux.conf
+ConfigPATH=$(pwd)/Linux.conf
 
 #欢迎函数
 function Welcome()
@@ -84,23 +83,23 @@ function Log()
 #获取系统相关信息
 function SystemInformation()
 {
-	systemName=$(cat /etc/issue | cut -d " " -f1)
-	case "${systemName}" in
+	systemLibraryName=$(cat /etc/issue | cut -d " " -f1)
+	case "${systemLibraryName}" in
 		Raspbian)
-			systemVersion=$(cat /etc/issue | cut -d " " -f3)	
+			systemLibraryVersion=$(cat /etc/issue | cut -d " " -f3)	
 		;;
 		Ubuntu)
-			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+			systemLibraryVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
 		;;
 		CentOS)
-			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+			systemLibraryVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
 		;;
 		*)
 			Log -E "系统名称获取失败,脚本将终止运行!"
 			exit 127
 		;;
 	esac
-	Log -I "欢迎使用${systemName}系统,系统版本号为 ${systemVersion} !"
+	Log -I "欢迎使用${systemLibraryName}系统,系统版本号为 ${systemLibraryVersion} !"
 	echo
 }
 #判断命令是否执行成功
@@ -122,20 +121,20 @@ function Judge_Order(){
 function ParseConfigurationFile()
 {
 	#配置文件关联数组
-	test ! -f ${configFile} && \
-		Log -E "配置文件 ${configFile} 不存在!" && exit 90
-	test -z ${systemName} && \
+	test ! -f ${ConfigPATH} && \
+		Log -E "配置文件 ${ConfigPATH} 不存在!" && exit 90
+	test -z ${systemLibraryName} && \
 		Log -E "系统信息获取失败,程序结束!" && exit 127
 	#解析脚本名称
-	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'`)
-	indexName=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
-    indexValues=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${configFile}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
+	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'`)
+	indexName=(`sed -n '/\['${systemLibraryName}.Config'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
+    indexValues=(`sed -n '/\['${systemLibraryName}.Config'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
 	for((i=0;i<${#indexName[*]};i++)); do		
 		ConfigArray[${indexName[i]}]=${indexValues[i]}			
 	done
 	test ${#ScriptArray[@]} -eq 0 -o ${#ConfigArray[@]} -eq 0  && \
-		Log -W "${configFile} 配置文件解析失败！" && exit 127
-	Log -I "${configFile} 配置文件解析成功!"
+		Log -W "${ConfigPATH} 配置文件解析失败！" && exit 127
+	Log -I "${ConfigPATH} 配置文件解析成功!"
 }	
 #判断方法是否继续执行
 #${1}:传入用户选择；
@@ -213,13 +212,13 @@ function Software_Install()
 	isChooseMode=${?}
 	#Determine whether to execute  method
 	test ${isChooseMode} -ne 1 -a ${isChooseMode} -ne 126  && \
-		sudo chmod 744 ${1} && ${1} && echo &&Judge_Order "${1}" 1
+		source ${1} "TRANSFER" && echo &&Judge_Order "${1}" 1
 	echo
 }
 #更新软件
 function Update_All()
 {
-	if [ ${systemName} = "Raspbian" -o ${systemName} = "Ubuntu" ];then
+	if [ ${systemLibraryName} == "Raspbian" -o ${systemLibraryName} == "Ubuntu" ];then
 			sudo apt-get upgrade -y
 			Judge_Order "sudo apt-get upgrade -y" 1
 			sudo apt-get update -y
@@ -228,7 +227,7 @@ function Update_All()
 			Judge_Order "sudo apt-get -f install -y" 1
 			sudo apt-get autoremove -y
 			Judge_Order "sudo apt-get autoremove -y" 1
-	elif [ ${systemName} = "CentOS" ];then
+	elif [ ${systemLibraryName} == "CentOS" ];then
 			sudo yum upgrade -y
 			Judge_Order "sudo yum upgrade -y" 1
 			sudo yum update -y
@@ -265,10 +264,10 @@ function  Determine_SoftwareFold_Exist()
 function Default_Install(){
 	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
-	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
+	if [ ${systemLibraryName} = "Raspbian" -o  ${systemLibraryName} = "Ubuntu" ]; then
 		sudo apt-get install ${1} -y
 		Judge_Order "sudo apt-get install ${1} -y" 1
-	elif [ ${systemName} = "CentOS" ]; then
+	elif [ ${systemLibraryName} = "CentOS" ]; then
 		sudo yum install ${1} -y
 		Judge_Order "sudo yum install ${1} -y" 1
 	fi
@@ -277,10 +276,10 @@ function Default_Install(){
 function Default_AutoRemove(){
 	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
-	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
+	if [ ${systemLibraryName} = "Raspbian" -o  ${systemLibraryName} = "Ubuntu" ]; then
 		sudo apt-get autoremove ${1} -y
 		Judge_Order "sudo apt-get autoremove ${1} -y" 1
-	elif [ ${systemName} = "CentOS" ]; then
+	elif [ ${systemLibraryName} = "CentOS" ]; then
 		sudo yum autoremove ${1} -y
 		Judge_Order "sudo yum autoremove ${1} -y" 1
 	fi
