@@ -1,10 +1,5 @@
 #! /bin/bash
 
-declare -A ConfigArray
-#系统名称
-systemName=""
-#系统版本号
-systemVersion=0
 #系统目录
 #rootDir=/home/pi/Linux/Linux_System_Init
 rootDir=$(pwd)
@@ -26,8 +21,6 @@ function Check_Library()
         . ${LibraryPATH}
 		Log -I "库文件: ${LibraryPATH} 存在,程序将开始执行!" && echo
         SystemInformation
-        systemName=${systemLibraryName}
-		systemVersion=${systemLibraryVersion}
         ParseConfigurationFile
 	fi
 	echo
@@ -106,6 +99,11 @@ function Main()
 {
 	if [ ${transfer} -eq 0 ]; then
 		#Step 1: 校验库文件是否存在
+        declare -A ConfigArray
+        #系统名称
+        systemName=""
+        #系统版本号
+        systemVersion=0
 		Check_Library
         test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
             echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127

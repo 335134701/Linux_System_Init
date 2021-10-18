@@ -12,6 +12,7 @@
 	# 127:表示命令执行失败
 #**********************************************************
 
+
 INFOTime="[\033[32m$(date +"%Y-%m-%d %T") Info\033[0m]  "
 WARNTime="[\033[33m$(date +"%Y-%m-%d %T") Warning\033[0m]  "
 DEBUGTime="[\033[34m$(date +"%Y-%m-%d %T") Warning\033[0m]  "
@@ -83,23 +84,23 @@ function Log()
 #获取系统相关信息
 function SystemInformation()
 {
-	systemLibraryName=$(cat /etc/issue | cut -d " " -f1)
-	case "${systemLibraryName}" in
+	systemName=$(cat /etc/issue | cut -d " " -f1)
+	case "${systemName}" in
 		Raspbian)
-			systemLibraryVersion=$(cat /etc/issue | cut -d " " -f3)	
+			systemVersion=$(cat /etc/issue | cut -d " " -f3)	
 		;;
 		Ubuntu)
-			systemLibraryVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
 		;;
 		CentOS)
-			systemLibraryVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
+			systemVersion=$(cat /etc/issue | cut -d " " -f2| cut -d "." -f1)
 		;;
 		*)
 			Log -E "系统名称获取失败,脚本将终止运行!"
 			exit 127
 		;;
 	esac
-	Log -I "欢迎使用${systemLibraryName}系统,系统版本号为 ${systemLibraryVersion} !"
+	Log -I "欢迎使用${systemName}系统,系统版本号为 ${systemVersion} !"
 	echo
 }
 #判断命令是否执行成功
@@ -123,12 +124,12 @@ function ParseConfigurationFile()
 	#配置文件关联数组
 	test ! -f ${ConfigPATH} && \
 		Log -E "配置文件 ${ConfigPATH} 不存在!" && exit 90
-	test -z ${systemLibraryName} && \
+	test -z ${systemName} && \
 		Log -E "系统信息获取失败,程序结束!" && exit 127
 	#解析脚本名称
 	ScriptArray=(`sed -n '/\['Script_File'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'`)
-	indexName=(`sed -n '/\['${systemLibraryName}.Config'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
-    indexValues=(`sed -n '/\['${systemLibraryName}.Config'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
+	indexName=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $1}'`)
+    indexValues=(`sed -n '/\['${systemName}.Config'\]/,/\[/p' ${ConfigPATH}|grep -Ev '\[|\]|^$|^#'|awk -F '=' '{print $2}'`)
 	for((i=0;i<${#indexName[*]};i++)); do		
 		ConfigArray[${indexName[i]}]=${indexValues[i]}			
 	done
@@ -218,7 +219,7 @@ function Software_Install()
 #更新软件
 function Update_All()
 {
-	if [ ${systemLibraryName} == "Raspbian" -o ${systemLibraryName} == "Ubuntu" ];then
+	if [ ${systemName} == "Raspbian" -o ${systemName} == "Ubuntu" ];then
 			sudo apt-get upgrade -y
 			Judge_Order "sudo apt-get upgrade -y" 1
 			sudo apt-get update -y
@@ -227,7 +228,7 @@ function Update_All()
 			Judge_Order "sudo apt-get -f install -y" 1
 			sudo apt-get autoremove -y
 			Judge_Order "sudo apt-get autoremove -y" 1
-	elif [ ${systemLibraryName} == "CentOS" ];then
+	elif [ ${systemName} == "CentOS" ];then
 			sudo yum upgrade -y
 			Judge_Order "sudo yum upgrade -y" 1
 			sudo yum update -y
@@ -264,10 +265,10 @@ function  Determine_SoftwareFold_Exist()
 function Default_Install(){
 	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
-	if [ ${systemLibraryName} = "Raspbian" -o  ${systemLibraryName} = "Ubuntu" ]; then
+	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
 		sudo apt-get install ${1} -y
 		Judge_Order "sudo apt-get install ${1} -y" 1
-	elif [ ${systemLibraryName} = "CentOS" ]; then
+	elif [ ${systemName} = "CentOS" ]; then
 		sudo yum install ${1} -y
 		Judge_Order "sudo yum install ${1} -y" 1
 	fi
@@ -276,24 +277,11 @@ function Default_Install(){
 function Default_AutoRemove(){
 	test ${#} -ne 1 && \
 		Log -E "函数传入参数错误!" && return 80
-	if [ ${systemLibraryName} = "Raspbian" -o  ${systemLibraryName} = "Ubuntu" ]; then
+	if [ ${systemName} = "Raspbian" -o  ${systemName} = "Ubuntu" ]; then
 		sudo apt-get autoremove ${1} -y
 		Judge_Order "sudo apt-get autoremove ${1} -y" 1
-	elif [ ${systemLibraryName} = "CentOS" ]; then
+	elif [ ${systemName} = "CentOS" ]; then
 		sudo yum autoremove ${1} -y
 		Judge_Order "sudo yum autoremove ${1} -y" 1
-	fi
-}
-
-#执行其他脚本文件
-#${1}:脚本文件名称及目录
-function Run_SHFile()
-{
-	if [ -f $(pwd)/${1} ];then
-		sudo chmod 755 ${1}
-		${1}
-		Judge_Order ${1} 1
-	else
-		Log -E "$(pwd)/${1} 脚本不存在!"
 	fi
 }
