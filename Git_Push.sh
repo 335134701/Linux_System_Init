@@ -49,8 +49,8 @@ function Local_Push()
 function Main(){
 	#=======================================================
 	#参数更改
-	repository=git@github.com:335134701/Linux_System_Init.git
-	localDir=$(pwd)
+	localDir=$(pwd)	
+	repository=git@github.com:335134701/${localDir##*/}.git
 	localDirName=main
 	#=======================================================
 	git --version >/dev/null 2>&1
