@@ -41,13 +41,18 @@ function Chrome_Install()
 
 #树莓派交叉编译环境搭建
 function RaspbianCompilationEnv() {
-	echo "---------------------------RaspbianCompilationEnv" # arguments are accessible through $1, $2,...
+	sudo apt install gcc-arm-linux-gnueabihf -y
+	sudo apt install g++-arm-linux-gnueabihf -y
+	#注意，需要更新Cmake版本3.17.0版
+	#地址:https://cmake.org/files/v3.17/
 }
 
 
 function UbuntuSoftware(){
     #第一步:谷歌浏览器安装
 	Chrome_Install
+	#第二步:安装树莓派交叉编译环境,默认不安装
+	#RaspbianCompilationEnv
 }
 
 function Main()

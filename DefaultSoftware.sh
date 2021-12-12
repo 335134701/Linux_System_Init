@@ -180,6 +180,8 @@ function Ubuntu_Software(){
 	Default_Install  "git"
 	#第9步:安装openssh-server
 	Default_Install  "openssh-server"
+	#第10步:安装必要的编译环境
+	Default_Install  "build-essential"
 }
 #CentOS默认软件安装
 function CentOS_Software(){
