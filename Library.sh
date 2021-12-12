@@ -20,7 +20,7 @@ ERRORTime="[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  "
 userName=${USER}
 softwareRootDir=${HOME}/Software
 softwareDir=${HOME}/Software
-ConfigPATH=$(pwd)/Linux.conf
+ConfigPATH=${rootDir}/Linux.conf
 
 #欢迎函数
 function Welcome()

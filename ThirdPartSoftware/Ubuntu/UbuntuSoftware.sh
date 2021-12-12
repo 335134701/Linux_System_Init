@@ -1,15 +1,5 @@
 #! /bin/bash
 
-
-#系统目录
-#rootDir=/home/pi/Linux/Linux_System_Init
-rootDir=$(pwd)
-#当前路径
-currentDir=${rootDir}/ThirdPartSoftware/Ubuntu
-#库文件路径
-LibraryPATH=${rootDir}/Library.sh
-#配置文件路径
-ConfigPATH=${rootDir}/Linux.conf
 #被其他主程序调用标记
 transfer=0
 
@@ -29,6 +19,7 @@ function Check_Library()
 	echo
 }
 
+#谷歌浏览器安装
 function Chrome_Install()
 {
 	sudo rm -rf ${currentDir}/google-chrome*
@@ -48,6 +39,12 @@ function Chrome_Install()
 	/usr/bin/google-chrome-stable
 }
 
+#树莓派交叉编译环境搭建
+function RaspbianCompilationEnv() {
+	echo "---------------------------RaspbianCompilationEnv" # arguments are accessible through $1, $2,...
+}
+
+
 function UbuntuSoftware(){
     #第一步:谷歌浏览器安装
 	Chrome_Install
@@ -62,11 +59,28 @@ function Main()
 		systemName=""
 		#系统版本号
 		systemVersion=0
+		#系统目录
+		#rootDir=/home/pi/Linux/Linux_System_Init
+		rootDir=$(pwd)/../..
+		#当前路径
+		currentDir=${rootDir}/ThirdPartSoftware/Ubuntu
+		#库文件路径
+		LibraryPATH=${rootDir}/Library.sh
+		#配置文件路径
+		ConfigPATH=${rootDir}/Linux.conf
 		Check_Library
         test -z "${systemName}" -o  ${systemVersion} -eq 0 && \
             echo -e "[\033[31m$(date +"%Y-%m-%d %T") Error\033[0m]  ""\033[31m系统信息未获取成功!\033[0m" &&  exit 127
 		#Step 2: 执行欢迎函数
 		Welcome
+	else
+		rootDir=${rootDir}
+		#当前路径
+		currentDir=${rootDir}/ThirdPartSoftware/Ubuntu
+		#库文件路径
+		LibraryPATH=${currentDir}
+		#配置文件路径
+		ConfigPATH=${ConfigPATH}
 	fi
     #Step 3: 执行逻辑处理函数
     UbuntuSoftware
