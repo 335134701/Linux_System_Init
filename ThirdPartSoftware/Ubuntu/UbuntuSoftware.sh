@@ -43,8 +43,6 @@ function Chrome_Install()
 function RaspbianCompilationEnv() {
 	sudo apt install gcc-arm-linux-gnueabihf -y
 	sudo apt install g++-arm-linux-gnueabihf -y
-	#注意，需要更新Cmake版本3.17.0版
-	#地址:https://cmake.org/files/v3.17/
 }
 
 
