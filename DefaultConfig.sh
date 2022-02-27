@@ -9,10 +9,11 @@
 	# 5.连接成功,打开命令行,输入:sudo raspi-config
 	# 6.开机自启动SSH:Interfacing Options->SSH->是->Enter键
 	# 7.开机自启动VNC:Interfacing Options->VNC->是->Enter键     
-	# 8.设置中文环境:Localisation Option-> Locale->选择:zh_CN.GB2312;zh_CN.GB18030;zh_GBK;zh_CN.UTF-8->OK
+	# 8.开机自启动VNC:Interfacing Options->I2C->是->Enter键     
+	# 9.设置中文环境:Localisation Option-> Locale->选择:zh_CN.GB2312;zh_CN.GB18030;zh_GBK;zh_CN.UTF-8->OK
 	#   注意:空格键可选择多选或取消多选
-	# 9.若SD卡空间大于树莓派显示空间,可扩展空间:Advanced Options->Al Expand Filesystem->确定
-	# 10.如果VNC连接后界面无法显示,修改分辨率:Display Options->Resolution->根据需要设置分辨率->确定
+	# 10.若SD卡空间大于树莓派显示空间,可扩展空间:Advanced Options->Al Expand Filesystem->确定
+	# 11.如果VNC连接后界面无法显示,修改分辨率:Display Options->Resolution->根据需要设置分辨率->确定
 #**********************************************************
 
 #系统目录
@@ -60,12 +61,13 @@ function Raspbian_Description()
 	echo -e "\033[34m**      5.连接成功,打开命令行,输入:sudo raspi-config                         **\033[0m"
 	echo -e "\033[34m**      6.开机自启动SSH:Interfacing Options->SSH->是->Enter键                **\033[0m"
 	echo -e "\033[34m**      7.开机自启动VNC:Interfacing Options->VNC->是->Enter键                **\033[0m"
-	echo -e "\033[34m**      8.设置中文环境:Localisation Option-> Locale                          **\033[0m"
+	echo -e "\033[34m**      8.开机自启动VNC:Interfacing Options->I2C->是->Enter键                **\033[0m"
+	echo -e "\033[34m**      9.设置中文环境:Localisation Option-> Locale                          **\033[0m"
 	echo -e "\033[34m**        ->选择:zh_CN.GB2312;zh_CN.GB18030;zh_GBK;zh_CN.UTF-8->OK           **\033[0m"
 	echo -e "\033[34m**        注意:空格键可选择多选或取消多选                                    **\033[0m"
-	echo -e "\033[34m**      9.若SD卡空间大于树莓派显示空间,可扩展空间:                           **\033[0m"
+	echo -e "\033[34m**      10.若SD卡空间大于树莓派显示空间,可扩展空间:                          **\033[0m"
 	echo -e "\033[34m**        Advanced Options->Al Expand Filesystem->确定                       **\033[0m"
-	echo -e "\033[34m**     10.如果VNC连接后界面无法显示,修改分辨率:                              **\033[0m"
+	echo -e "\033[34m**     11.如果VNC连接后界面无法显示,修改分辨率:                              **\033[0m"
 	echo -e "\033[34m**         Display Options->Resolution->根据需要设置分辨率->确定             **\033[0m"
 	echo -e "\033[34m**                                                                           **\033[0m"
 	echo -e "\033[34m**                                                                           **\033[0m"
@@ -124,15 +126,15 @@ EOF
 }
 
 function Raspbian_Config(){
-	#第1步:开启vncserver,需要注意如下几点:
+	#第1步:设置界面相关选项
+	sudo raspi-config
+	#第2步:开启vncserver,需要注意如下几点:
 	#需要注意的是:此服务在raspi-config 中设置好后默认是启动(若服务未启动，可以重启系统)，无需再手动启动，若默认启动失败，则可以手动启动
 	#需要注意的是:此服务可以启动多次，因此关闭此服务命令为:vncserver -kill :1
 	#-kill :1  	后面的1对应的是手动启动的ID,系统自启动的是没有具体ID的，因此无法使用命令:vncserver -kill :1 停止vncserver服务
 	#系统启动的vncserver服务可以使用命令查看具体进程:ps -ef | grep vncserver;如果不清楚注释可以使用此命令查看手动启动服务和系统启动区别
 	#此步骤执行目录为:/usr/bin/vncserver ;使用命令vncserver或者/usr/bin/vncserver都可以启动服务vncserver
-	vncserver 
-	#第2步:设置界面相关选项
-	sudo raspi-config
+	/etc/vnc/xstartup
 	#第3步:更改Pi用户密码,如果密码为原始密码或者最后修改密码时间距离现在日期大于30天,则需要修改密码
 	test $(($(($(date --utc --date "$1" +%s)/86400))-$(sudo cat /etc/shadow | grep pi | cut -d ":" -f 3))) -ge 5 &&
 		echo -e ${INFOTime}"\033[34m请输入新的Pi账户密码!\033[0m" && \

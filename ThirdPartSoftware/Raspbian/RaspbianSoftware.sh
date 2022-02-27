@@ -20,9 +20,14 @@ function Check_Library()
 }
 
 function RaspbianSoftware(){
-	#第一步:安装JDK
-    sudo apt-get install openjdk-8-jdk -y
-	Judge_Order "sudo apt install openjdk-8-jdk -y" 1
+	#第1步:添加python GPIO模块
+	Default_Install "python3-rpi.gpio"
+	#第2步:添加python OLED驱动
+	Default_Install "python-smbus"
+	Default_Install "i2c-tools"
+	sudo python -m pip install --upgrade pip setuptools wheel
+	sudo pip install Adafruit-SSD1306
+	Judge_Order "sudo pip install Adafruit-SSD1306" 0
 }
 
 function Main()

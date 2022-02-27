@@ -152,6 +152,15 @@ function Raspbian_Software(){
 	Default_Install "qtcreator"
 	Default_Install "qtmultimedia5-dev"
 	Default_Install "libqt5serialport5-dev"
+	#第16步:安装python3
+	Default_Install "python3"
+	sudo apt-get autoremove -y
+	#清除当前python软链接
+	sudo rm -rf /usr/bin/python
+	Judge_Order "sudo rm -rf /usr/bin/python" 0
+	#创建新的软链接，新版本可以使用 ls /usr/bin/python*查看最新版本
+	sudo ln -s /usr/bin/python3.7 /usr/bin/python
+	Judge_Order "sudo ln -s /usr/bin/python3.7 /usr/bin/python" 0
 }
 #Ubuntu默认软件安装
 function Ubuntu_Software(){
