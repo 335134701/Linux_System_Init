@@ -26,8 +26,17 @@ function RaspbianSoftware(){
 	Default_Install "python-smbus"
 	Default_Install "i2c-tools"
 	sudo python -m pip install --upgrade pip setuptools wheel
-	sudo pip install Adafruit-SSD1306
-	Judge_Order "sudo pip install Adafruit-SSD1306" 0
+	Judge_Order "sudo python -m pip install --upgrade pip setuptools wheel" 0
+	sudo apt-get install python-pip python3-pip
+	Judge_Order "sudo apt-get install python-pip python3-pip" 0
+	sudo apt-get install python-pil python3-pil
+	Judge_Order "sudo apt-get install python-pil python3-pil" 0
+	sudo pip3 install Adafruit_GPIO
+	Judge_Order "sudo pip3 install Adafruit_GPIO" 0
+	sudo pip3 install Adafruit_SSD1306
+	Judge_Order "sudo pip3 install Adafruit_SSD1306" 0
+	sudo pip3 install Adafruit_BBIO
+	Judge_Order "sudo pip3 install Adafruit_BBIO" 0
 }
 
 function Main()
