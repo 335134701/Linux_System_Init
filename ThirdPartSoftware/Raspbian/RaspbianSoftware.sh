@@ -29,6 +29,7 @@ function Install_Gitlab(){
 	Judge_Order "sudo curl -sS https://packages.gitlab.com/install/repositories/gitlab/raspberry-pi2/script.deb.sh | sudo bash" 0
 	sudo apt-get install gitlab-ce -y
 	Judge_Order "sudo apt-get install gitlab-ce -y" 0
+	#修改配置文件:sudo vim /etc/gitlab/gitlab.rb
 	#修改访问连接:external_url 'http://192.168.1.150:8556'
 	#修改仓库默认路径:git_data_dirs()
 	#修改上传项目文件大小限制:nginx['client_max_body_size'] = '10240m'
@@ -38,10 +39,13 @@ function Install_Gitlab(){
 	#重启gitlab:sudo gitlab-ctl restart
 	#gitlab默认自启动:sudo systemctl enable gitlab-runsvdir
 	#禁用GitLab开机自启动：sudo systemctl disable gitlab-runsvdir
+	#备份gitlab仓库:sudo gitlab-rake gitlab:backup:create
+	#修改备份文件存放路径:gitlab_rails['backup_path'] = "/var/opt/gitlab/backups"
 	#注意系统语言编码选择:zh_CN.UTF-8
 	#修改/etc/default/locale文件,添加:
 	#LANG=zh_CN.UTF-8 
 	#LC_ALL=zh_CN.UTF-8
+	
 }
 
 function RaspbianSoftware(){
