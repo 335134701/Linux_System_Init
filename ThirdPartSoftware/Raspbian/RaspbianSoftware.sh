@@ -19,6 +19,31 @@ function Check_Library()
 	echo
 }
 
+#树莓派安装gitlab
+function Install_Gitlab(){
+	sudo apt-get install -y curl openssh-server ca-certificates perl postfix 
+	Judge_Order "sudo apt-get install -y curl openssh-server ca-certificates perl" 0
+	curl https://packages.gitlab.com/gpg.key | sudo apt-key add -
+	Judge_Order "curl https://packages.gitlab.com/gpg.key | sudo apt-key add -" 0
+	sudo curl -sS https://packages.gitlab.com/install/repositories/gitlab/raspberry-pi2/script.deb.sh | sudo bash
+	Judge_Order "sudo curl -sS https://packages.gitlab.com/install/repositories/gitlab/raspberry-pi2/script.deb.sh | sudo bash" 0
+	sudo apt-get install gitlab-ce -y
+	Judge_Order "sudo apt-get install gitlab-ce -y" 0
+	#修改访问连接:external_url 'http://192.168.1.150:8556'
+	#修改仓库默认路径:git_data_dirs()
+	#修改上传项目文件大小限制:nginx['client_max_body_size'] = '10240m'
+	#使配置文件生效:sudo gitlab-ctl reconfigure
+	#启动gitlab:sudo gitlab-ctl start
+	#停止gitlab:sudo gitlab-ctl stop
+	#重启gitlab:sudo gitlab-ctl restart
+	#gitlab默认自启动:sudo systemctl enable gitlab-runsvdir
+	#禁用GitLab开机自启动：sudo systemctl disable gitlab-runsvdir
+	#注意系统语言编码选择:zh_CN.UTF-8
+	#修改/etc/default/locale文件,添加:
+	#LANG=zh_CN.UTF-8 
+	#LC_ALL=zh_CN.UTF-8
+}
+
 function RaspbianSoftware(){
 	#第1步:添加python GPIO模块
 	Default_Install "python3-rpi.gpio"

@@ -147,12 +147,17 @@ function Raspbian_Software(){
 	Default_Install "openjdk-8-jdk"
 	#第14步:安装gdbserver
 	Default_Install "gdbserver"
-	#第15步:安装qt
+	#第15步:安装时间同步程序ntp
+	Default_Install "ntpdate"
+	sudo timedatectl set-ntp true
+	#修改本地时区，输入指令:sudo dpkg-reconfigure tzdata,选择 Asia/shanghai 时区
+	sudo dpkg-reconfigure tzdata
+	#第16步:安装qt
 	Default_Install "qt5-default"
 	Default_Install "qtcreator"
 	Default_Install "qtmultimedia5-dev"
 	Default_Install "libqt5serialport5-dev"
-	#第16步:安装python3
+	#第17步:安装python3
 	Default_Install "python3"
 	sudo apt-get autoremove -y
 	#清除当前python软链接
