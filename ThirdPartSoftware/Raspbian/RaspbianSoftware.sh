@@ -34,6 +34,9 @@ function Install_Gitlab(){
 	#修改仓库默认路径:git_data_dirs()
 	#修改上传项目文件大小限制:nginx['client_max_body_size'] = '10240m'
 	#使配置文件生效:sudo gitlab-ctl reconfigure
+	#gitlab 修改git clone地址为指定域名:sudo vim /opt/gitlab/embedded/service/gitlab-rails/config/gitlab.yml
+	#host sy.stc15.com
+	#https:true
 	#启动gitlab:sudo gitlab-ctl start
 	#停止gitlab:sudo gitlab-ctl stop
 	#重启gitlab:sudo gitlab-ctl restart
