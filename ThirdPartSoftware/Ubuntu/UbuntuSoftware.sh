@@ -48,7 +48,7 @@ function RaspbianCompilationEnv() {
 
 function UbuntuSoftware(){
     #第一步:谷歌浏览器安装
-	Chrome_Install
+	#Chrome_Install
 	#第二步:安装树莓派交叉编译环境,默认不安装
 	#RaspbianCompilationEnv
 }
