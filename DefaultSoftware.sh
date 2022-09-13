@@ -196,6 +196,8 @@ function Ubuntu_Software(){
 	Default_Install  "openssh-server"
 	#第10步:安装必要的编译环境
 	Default_Install  "build-essential"
+	#第11步:安装谷歌浏览器
+	Default_Install  "google-chrome-stable"
 }
 #CentOS默认软件安装
 function CentOS_Software(){
